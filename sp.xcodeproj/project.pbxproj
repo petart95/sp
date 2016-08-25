@@ -7,7 +7,18 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		AE90BD771D6F07DB005AF3BF /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE90BD761D6F07DB005AF3BF /* main.cpp */; };
+		AE90BD7E1D6F08B9005AF3BF /* as.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE90BD7D1D6F08B9005AF3BF /* as.cpp */; };
+		AE90BD831D6F08CA005AF3BF /* DirectiveFunctionsForFirstPass.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE90BD811D6F08CA005AF3BF /* DirectiveFunctionsForFirstPass.cpp */; };
+		AE90BD841D6F08CA005AF3BF /* DirectiveFunctionsForSecondPass.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE90BD821D6F08CA005AF3BF /* DirectiveFunctionsForSecondPass.cpp */; };
+		AE90BD871D6F08D8005AF3BF /* Log.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE90BD851D6F08D8005AF3BF /* Log.cpp */; };
+		AE90BD8B1D6F08E1005AF3BF /* OperationFunctionsForFirstPass.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE90BD891D6F08E1005AF3BF /* OperationFunctionsForFirstPass.cpp */; };
+		AE90BD8C1D6F08E1005AF3BF /* OperationFunctionsForSecondPass.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE90BD8A1D6F08E1005AF3BF /* OperationFunctionsForSecondPass.cpp */; };
+		AE90BD8F1D6F08EA005AF3BF /* splitString.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE90BD8E1D6F08EA005AF3BF /* splitString.cpp */; };
+		AE90BD921D6F08F0005AF3BF /* Simbol.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE90BD901D6F08F0005AF3BF /* Simbol.cpp */; };
+		AE90BD991D6F09DF005AF3BF /* Operation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE90BD971D6F09DF005AF3BF /* Operation.cpp */; };
+		AE90BD9B1D6F2358005AF3BF /* Opcode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE90BD9A1D6F2358005AF3BF /* Opcode.cpp */; };
+		AE90BD9E1D6F236C005AF3BF /* Operands.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE90BD9C1D6F236C005AF3BF /* Operands.cpp */; };
+		AE90BDA01D6FBBC0005AF3BF /* test.s in Sources */ = {isa = PBXBuildFile; fileRef = AE90BD9F1D6FBBC0005AF3BF /* test.s */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -24,7 +35,27 @@
 
 /* Begin PBXFileReference section */
 		AE90BD731D6F07DB005AF3BF /* sp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = sp; sourceTree = BUILT_PRODUCTS_DIR; };
-		AE90BD761D6F07DB005AF3BF /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		AE90BD7D1D6F08B9005AF3BF /* as.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = as.cpp; sourceTree = "<group>"; };
+		AE90BD7F1D6F08BE005AF3BF /* as.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = as.h; sourceTree = "<group>"; };
+		AE90BD801D6F08CA005AF3BF /* DirectiveFunctions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DirectiveFunctions.h; sourceTree = "<group>"; };
+		AE90BD811D6F08CA005AF3BF /* DirectiveFunctionsForFirstPass.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DirectiveFunctionsForFirstPass.cpp; sourceTree = "<group>"; };
+		AE90BD821D6F08CA005AF3BF /* DirectiveFunctionsForSecondPass.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DirectiveFunctionsForSecondPass.cpp; sourceTree = "<group>"; };
+		AE90BD851D6F08D8005AF3BF /* Log.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Log.cpp; sourceTree = "<group>"; };
+		AE90BD861D6F08D8005AF3BF /* Log.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Log.h; sourceTree = "<group>"; };
+		AE90BD881D6F08E1005AF3BF /* OperationFunctions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OperationFunctions.h; sourceTree = "<group>"; };
+		AE90BD891D6F08E1005AF3BF /* OperationFunctionsForFirstPass.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OperationFunctionsForFirstPass.cpp; sourceTree = "<group>"; };
+		AE90BD8A1D6F08E1005AF3BF /* OperationFunctionsForSecondPass.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OperationFunctionsForSecondPass.cpp; sourceTree = "<group>"; };
+		AE90BD8D1D6F08EA005AF3BF /* ProcessString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProcessString.h; sourceTree = "<group>"; };
+		AE90BD8E1D6F08EA005AF3BF /* splitString.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = splitString.cpp; sourceTree = "<group>"; };
+		AE90BD901D6F08F0005AF3BF /* Simbol.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Simbol.cpp; sourceTree = "<group>"; };
+		AE90BD911D6F08F0005AF3BF /* Simbol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Simbol.h; sourceTree = "<group>"; };
+		AE90BD931D6F08F5005AF3BF /* Utility.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Utility.h; sourceTree = "<group>"; };
+		AE90BD951D6F0923005AF3BF /* CreateMap.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CreateMap.hpp; sourceTree = "<group>"; };
+		AE90BD971D6F09DF005AF3BF /* Operation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Operation.cpp; sourceTree = "<group>"; };
+		AE90BD981D6F09DF005AF3BF /* Operation.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Operation.hpp; sourceTree = "<group>"; };
+		AE90BD9A1D6F2358005AF3BF /* Opcode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Opcode.cpp; sourceTree = "<group>"; };
+		AE90BD9C1D6F236C005AF3BF /* Operands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Operands.cpp; sourceTree = "<group>"; };
+		AE90BD9F1D6FBBC0005AF3BF /* test.s */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = test.s; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,7 +88,27 @@
 		AE90BD751D6F07DB005AF3BF /* sp */ = {
 			isa = PBXGroup;
 			children = (
-				AE90BD761D6F07DB005AF3BF /* main.cpp */,
+				AE90BD7D1D6F08B9005AF3BF /* as.cpp */,
+				AE90BD7F1D6F08BE005AF3BF /* as.h */,
+				AE90BD801D6F08CA005AF3BF /* DirectiveFunctions.h */,
+				AE90BD811D6F08CA005AF3BF /* DirectiveFunctionsForFirstPass.cpp */,
+				AE90BD821D6F08CA005AF3BF /* DirectiveFunctionsForSecondPass.cpp */,
+				AE90BD851D6F08D8005AF3BF /* Log.cpp */,
+				AE90BD861D6F08D8005AF3BF /* Log.h */,
+				AE90BD881D6F08E1005AF3BF /* OperationFunctions.h */,
+				AE90BD891D6F08E1005AF3BF /* OperationFunctionsForFirstPass.cpp */,
+				AE90BD8A1D6F08E1005AF3BF /* OperationFunctionsForSecondPass.cpp */,
+				AE90BD8D1D6F08EA005AF3BF /* ProcessString.h */,
+				AE90BD8E1D6F08EA005AF3BF /* splitString.cpp */,
+				AE90BD901D6F08F0005AF3BF /* Simbol.cpp */,
+				AE90BD911D6F08F0005AF3BF /* Simbol.h */,
+				AE90BD931D6F08F5005AF3BF /* Utility.h */,
+				AE90BD951D6F0923005AF3BF /* CreateMap.hpp */,
+				AE90BD981D6F09DF005AF3BF /* Operation.hpp */,
+				AE90BD971D6F09DF005AF3BF /* Operation.cpp */,
+				AE90BD9A1D6F2358005AF3BF /* Opcode.cpp */,
+				AE90BD9C1D6F236C005AF3BF /* Operands.cpp */,
+				AE90BD9F1D6FBBC0005AF3BF /* test.s */,
 			);
 			path = sp;
 			sourceTree = "<group>";
@@ -118,7 +169,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AE90BD771D6F07DB005AF3BF /* main.cpp in Sources */,
+				AE90BD831D6F08CA005AF3BF /* DirectiveFunctionsForFirstPass.cpp in Sources */,
+				AE90BD8B1D6F08E1005AF3BF /* OperationFunctionsForFirstPass.cpp in Sources */,
+				AE90BD871D6F08D8005AF3BF /* Log.cpp in Sources */,
+				AE90BD921D6F08F0005AF3BF /* Simbol.cpp in Sources */,
+				AE90BD8F1D6F08EA005AF3BF /* splitString.cpp in Sources */,
+				AE90BD841D6F08CA005AF3BF /* DirectiveFunctionsForSecondPass.cpp in Sources */,
+				AE90BD991D6F09DF005AF3BF /* Operation.cpp in Sources */,
+				AE90BD7E1D6F08B9005AF3BF /* as.cpp in Sources */,
+				AE90BD9E1D6F236C005AF3BF /* Operands.cpp in Sources */,
+				AE90BD8C1D6F08E1005AF3BF /* OperationFunctionsForSecondPass.cpp in Sources */,
+				AE90BD9B1D6F2358005AF3BF /* Opcode.cpp in Sources */,
+				AE90BDA01D6FBBC0005AF3BF /* test.s in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -239,6 +301,7 @@
 				AE90BD7C1D6F07DB005AF3BF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
