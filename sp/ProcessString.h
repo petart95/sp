@@ -27,4 +27,6 @@ bool isIntager(std::string s);
 
 int toIntager(std::string s);
 
+std::string toUpper(std::string s);
+
 #endif /* PROCESS_STRING_H_ */

@@ -39,3 +39,9 @@ bool isIntager(std::string s) {
 int toIntager(std::string s) {
     return atoi(s.c_str());
 }
+
+std::string toUpper(std::string s) {
+    std::transform(s.begin(), s.end(), s.begin(), toupper);
+    
+    return s;
+}

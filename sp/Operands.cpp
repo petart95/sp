@@ -10,7 +10,7 @@
 #include "CreateMap.hpp"
 #include "ProcessString.h"
 #include "as.h"
-#include "Log.h";
+#include "Log.h"
 
 Operation::Operands::Operands(std::vector<std::string> _value, std::string _type)
     : value(_value), type(splitStringWhitCharacterSet(_type, ",")), areValid(true) {
@@ -28,7 +28,17 @@ Operation::Operands::Operands(std::vector<std::string> _value, std::string _type
 }
 
 Operand Operation::Operands::getOperandAtIndex(int index) {
-    return parseOperandWithType(type[index], value[index]);
+    std::vector<std::string> types = splitStringWhitCharacterSet(type[index], "|");
+    
+    for(int i = 0; i < types.size(); i++) {
+        log("parsing " + value[index] + " of type " + types[i]);
+        Operand operand = parseOperandWithType(value[index], types[i]);
+        if(operand.value !=-1) {
+            return operand;
+        }
+    }
+    
+    return Operand(-1,-1, type[index]);
 }
 
 std::string Operation::Operands::createHexRepresentation() {
@@ -86,7 +96,7 @@ int parsOperandAsLabel(std::string value) {
     if(_value == -2) {
         //TODO
         // Should add r to .realoc
-        log("Label" + value + "dosn't exsist");
+        log("Label " + value + " dosn't exsist\n");
     }
     
     return _value;
@@ -95,7 +105,8 @@ int parsOperandAsLabel(std::string value) {
 Operand Operation::Operands::parseOperandWithType(std::string value, std::string type) {
     std::string tmp = type.substr(std::string("R_386_").length());
     
-    int _size = toIntager(tmp.substr(tmp.find_first_of("0123456789"), tmp.find_last_of("0123456789")));
+    int _size = toIntager(tmp.substr(tmp.find_first_of("0123456789"),
+                                     tmp.find_last_of("0123456789") - tmp.find_first_of("0123456789") + 1));
     
     int _value;
     
@@ -107,7 +118,7 @@ Operand Operation::Operands::parseOperandWithType(std::string value, std::string
             std::map<std::string, int> registers =
                 createMap<std::string, int>("PC", 16)("LR", 17)("SP", 18)("PSW", 19);
             for(int i = 0; i < supportedRegisters.size(); i++) {
-                if(supportedRegisters[i].compare(value) == 0) {
+                if(supportedRegisters[i].compare(toUpper(value)) == 0) {
                     _value = registers[value];
                 }
             }

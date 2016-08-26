@@ -109,9 +109,10 @@ void processLineFirstPass(std::string line) {
 		}
 
 	} else {
-		if(isOperationSupported(split[0])) {
-			log("Found Operation: " + split[0]);
-			(*handelOperation[split[0]])(split);
+        Operation operation(split);
+        if(operation.isOperationValid()) {
+            log("Found Operation: " + split[0]);
+            (*handelOperation[operation.opcode.name])(split);
 			sectionTabel[currentSectionIndex].locationCounter += 4;
 		} else {
 			log("Operation: " + split[0] + " not supported");
@@ -140,7 +141,8 @@ void processLineSecondPass(std::string line) {
 	} else {
         Operation operation(split);
 		if(operation.isOperationValid()) {
-			(*handelOperation[split[0]])(split);
+			(*handelOperation[operation.opcode.name])(split);
+            log("Operation " + split[0] + " valid");
         } else {
             if(!operation.opcode.isValid) {
                 log("Opcode " + split[0] + " is invalid");
