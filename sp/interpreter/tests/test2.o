@@ -1,0 +1,28 @@
+# Tabela simbola
+# ID  Name           Offset   Section ID Global/Local Defined/Undefnded 
+  0   .data          00000000 0          Local        Defined           
+  1   .text.1        00000000 1          Local        Defined           
+  2   a              00000000 1          Local        Defined           
+  3   .bss.4         00000000 2          Local        Defined           
+  4   b              00000000 2          Local        Defined           
+  5   m              00000000 0          Global       Undefnded         
+
+# .data
+
+
+# .ret.data
+# Offset   Type                Simbol ID
+
+# .text.1
+000000050000000000
+
+# .ret.text.1
+# Offset   Type                Simbol ID
+  00000004 R_386_32            1   
+  00000008 R_386_8             5   
+
+# .bss.4
+
+
+# .ret.bss.4
+# Offset   Type                Simbol ID
