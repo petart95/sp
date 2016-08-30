@@ -1,24 +1,15 @@
 #ifndef SIMBOL_H_
 #define SIMBOL_H_
 
+#include <iostream>
 #include <string>
 #include <vector>
-
-struct Section {
-	static int newID;
-	
-	int id;
-	std::string name;
-	int locationCounter;
-	std::string data;
-	std::string realocation;
-
-	Section(std::string _name) : name(_name), locationCounter(0), id(newID++), data(""), realocation("") {}
-};
 
 struct Simbol {
 	static int newID;
 	
+    static std::vector<Simbol> tabel;
+    
 	int id;
 	std::string name;
 	int offset;
@@ -26,7 +17,12 @@ struct Simbol {
 	bool isGlobal;
 	bool isDefined;
 
-	Simbol(std::string _name, int _offset, int _sectionIndex, bool _isDefined = true, bool _isGlobal = false); 
+	Simbol(std::string _name, int _offset, int _sectionIndex, bool _isDefined = true, bool _isGlobal = false);
+    
+    friend std::istream & operator >> (std::istream &in, Simbol &simbol);
+    friend std::ostream & operator << (std::ostream &out, const Simbol &simbol);
+    
+    static std::string tabelRows();
 };
 
 #endif /* SIMBOL_H_ */

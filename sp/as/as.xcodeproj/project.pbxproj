@@ -1,0 +1,146 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXFileReference section */
+		AEA735261D75D65B001398E4 /* .DS_Store */ = {isa = PBXFileReference; lastKnownFileType = file; path = .DS_Store; sourceTree = "<group>"; };
+		AEA735271D75D65B001398E4 /* bin */ = {isa = PBXFileReference; lastKnownFileType = folder; path = bin; sourceTree = "<group>"; };
+		AEA735291D75D65B001398E4 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
+		AEA7352B1D75D65B001398E4 /* obj */ = {isa = PBXFileReference; lastKnownFileType = folder; path = obj; sourceTree = "<group>"; };
+		AEA7352C1D75D65B001398E4 /* src */ = {isa = PBXFileReference; lastKnownFileType = folder; path = src; sourceTree = "<group>"; };
+		AEA7352D1D75D65B001398E4 /* tests */ = {isa = PBXFileReference; lastKnownFileType = folder; path = tests; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		AEA735201D75D65B001398E4 = {
+			isa = PBXGroup;
+			children = (
+				AEA735261D75D65B001398E4 /* .DS_Store */,
+				AEA735271D75D65B001398E4 /* bin */,
+				AEA735291D75D65B001398E4 /* Makefile */,
+				AEA7352B1D75D65B001398E4 /* obj */,
+				AEA7352C1D75D65B001398E4 /* src */,
+				AEA7352D1D75D65B001398E4 /* tests */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXLegacyTarget section */
+		AEA735251D75D65B001398E4 /* as */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "$(ACTION)";
+			buildConfigurationList = AEA7352E1D75D65B001398E4 /* Build configuration list for PBXLegacyTarget "as" */;
+			buildPhases = (
+			);
+			buildToolPath = /usr/bin/make;
+			buildWorkingDirectory = /Users/maxeler/Downloads/SP/sp/sp/as;
+			dependencies = (
+			);
+			name = as;
+			passBuildSettingsInEnvironment = 1;
+			productName = as;
+		};
+/* End PBXLegacyTarget section */
+
+/* Begin PBXProject section */
+		AEA735211D75D65B001398E4 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+			};
+			buildConfigurationList = AEA735241D75D65B001398E4 /* Build configuration list for PBXProject "as" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = AEA735201D75D65B001398E4;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				AEA735251D75D65B001398E4 /* as */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin XCBuildConfiguration section */
+		AEA735221D75D65B001398E4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				COPY_PHASE_STRIP = NO;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx10.6;
+			};
+			name = Debug;
+		};
+		AEA735231D75D65B001398E4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				COPY_PHASE_STRIP = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				SDKROOT = macosx10.6;
+			};
+			name = Release;
+		};
+		AEA7352F1D75D65B001398E4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				DEBUGGING_SYMBOLS = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = as;
+			};
+			name = Debug;
+		};
+		AEA735301D75D65B001398E4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = as;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		AEA735241D75D65B001398E4 /* Build configuration list for PBXProject "as" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AEA735221D75D65B001398E4 /* Debug */,
+				AEA735231D75D65B001398E4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AEA7352E1D75D65B001398E4 /* Build configuration list for PBXLegacyTarget "as" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AEA7352F1D75D65B001398E4 /* Debug */,
+				AEA735301D75D65B001398E4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = AEA735211D75D65B001398E4 /* Project object */;
+}

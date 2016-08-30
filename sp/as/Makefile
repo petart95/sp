@@ -6,7 +6,7 @@ LDFLAGS=
 
 SOURCES=$(wildcard src/*.cpp)
 OBJECTS=$(patsubst src/%.cpp, obj/%.o, $(SOURCES))
-EXECUTABLE=build/as
+EXECUTABLE=bin/as
 
 all: make_dirs $(SOURCES) $(EXECUTABLE)
 
@@ -19,8 +19,8 @@ obj/%.o: src/%.cpp
 .PHONY: clean clean_obj clean_exe clean_tests clean_~ make_dirs
 
 make_dirs:
-	mkdir bin
-	mkdir obj
+	mkdir -p bin
+	mkdir -p obj
 
 clean: clean_obj clean_exe clean_tests clean_~
 

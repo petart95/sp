@@ -34,33 +34,26 @@ void externDirectivFunctionForFirstPass(std::vector<std::string> directiv) {
 }
 
 void textDirectivFunctionForFirstPass(std::vector<std::string> directiv) {
-	sectionTabel.push_back(Section(directiv[0]));
-	currentSectionIndex = sectionTabel.size() - 1;
-	Simbol(directiv[0], sectionTabel[currentSectionIndex].locationCounter, currentSectionIndex);
+
 }
 
 void dataDirectivFunctionForFirstPass(std::vector<std::string> directiv) {
-	sectionTabel.push_back(Section(directiv[0]));
-	currentSectionIndex = sectionTabel.size() - 1;
-	Simbol(directiv[0], sectionTabel[currentSectionIndex].locationCounter, currentSectionIndex);
 }
 
 void bssDirectivFunctionForFirstPass(std::vector<std::string> directiv) {
-	sectionTabel.push_back(Section(directiv[0]));
-	currentSectionIndex = sectionTabel.size() - 1;
-	Simbol(directiv[0], sectionTabel[currentSectionIndex].locationCounter, currentSectionIndex);
+
 }
 
 void charDirectivFunctionForFirstPass(std::vector<std::string> directiv) {
-	sectionTabel[currentSectionIndex].locationCounter += 1 * (directiv.size() - 1);
+    Section::tabel[Section::current].locationCounter += 1 * (directiv.size() - 1);
 }
 
 void wordDirectivFunctionForFirstPass(std::vector<std::string> directiv) {
-	sectionTabel[currentSectionIndex].locationCounter += 2 * (directiv.size() - 1);
+	Section::tabel[Section::current].locationCounter += 2 * (directiv.size() - 1);
 }
 
 void longDirectivFunctionForFirstPass(std::vector<std::string> directiv) {
-	sectionTabel[currentSectionIndex].locationCounter += 4 * (directiv.size() - 1);
+	Section::tabel[Section::current].locationCounter += 4 * (directiv.size() - 1);
 }
 
 void alignDirectivFunctionForFirstPass(std::vector<std::string> directiv) {
@@ -70,13 +63,13 @@ void alignDirectivFunctionForFirstPass(std::vector<std::string> directiv) {
 		alignAmount = atoi(directiv[1].c_str());
 	}
 
-	if(sectionTabel[currentSectionIndex].locationCounter % alignAmount != 0) {
-		sectionTabel[currentSectionIndex].locationCounter += alignAmount - sectionTabel[currentSectionIndex].locationCounter % alignAmount;
+	if(Section::tabel[Section::current]locationCounter % alignAmount != 0) {
+		Section::tabel[Section::current].locationCounter += alignAmount - Section::tabel[Section::current].locationCounter % alignAmount;
 	}
 }
 
 void skipDirectivFunctionForFirstPass(std::vector<std::string> directiv) {
-	sectionTabel[currentSectionIndex].locationCounter += atoi(directiv[1].c_str());
+	Section::tabel[Section::current].locationCounter += atoi(directiv[1].c_str());
 }
 
 void endDirectivFunctionForFirstPass(std::vector<std::string> directiv) {
