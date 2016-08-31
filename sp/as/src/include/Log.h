@@ -8,17 +8,25 @@
 #ifndef LOG_H_
 #define LOG_H_
 
-#define LOG
+#include "ProcessString.h"
+
+#define CONCATENATE_STRINGS(_0, _1, _2, _3, _4, _5, _6, _7, _8, _9, ...) \
+(toString(_0) + toString(_1) + toString(_2) + toString(_3) + toString(_4) + \
+ toString(_5) + toString(_6) + toString(_7) + toString(_8) + toString(_9))
+
+#define LOG(...) log(CONCATENATE_STRINGS("", __VA_ARGS__, "", "", "", "", "", "", "", "", ""))
+
+#define LOGG
 
 #include <stdio.h>
 #include <stdarg.h>
 #include <string>
 
 #ifdef LOGFILE
-#define LOG
+#define LOGG
 #endif
 
-#ifdef LOG
+#ifdef LOGG
 
 extern FILE* logFile;
 extern volatile bool logging;

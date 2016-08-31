@@ -45,11 +45,11 @@ void bssDirectivFunctionForFirstPass(std::vector<std::string> directiv) {
 }
 
 void charDirectivFunctionForFirstPass(std::vector<std::string> directiv) {
-    Section::tabel[Section::current].locationCounter += 1 * (directiv.size() - 1);
+    Section::move(1 * (directiv.size() - 1));
 }
 
 void wordDirectivFunctionForFirstPass(std::vector<std::string> directiv) {
-	Section::tabel[Section::current].locationCounter += 2 * (directiv.size() - 1);
+	Section::move(2 * (directiv.size() - 1));
 }
 
 void longDirectivFunctionForFirstPass(std::vector<std::string> directiv) {
@@ -63,13 +63,13 @@ void alignDirectivFunctionForFirstPass(std::vector<std::string> directiv) {
 		alignAmount = atoi(directiv[1].c_str());
 	}
 
-	if(Section::tabel[Section::current]locationCounter % alignAmount != 0) {
-		Section::tabel[Section::current].locationCounter += alignAmount - Section::tabel[Section::current].locationCounter % alignAmount;
+	if(Section::tabel[Section::current].locationCounter % alignAmount != 0) {
+		Section::move(alignAmount - Section::tabel[Section::current].locationCounter % alignAmount);
 	}
 }
 
 void skipDirectivFunctionForFirstPass(std::vector<std::string> directiv) {
-	Section::tabel[Section::current].locationCounter += atoi(directiv[1].c_str());
+	Section::move(atoi(directiv[1].c_str()));
 }
 
 void endDirectivFunctionForFirstPass(std::vector<std::string> directiv) {

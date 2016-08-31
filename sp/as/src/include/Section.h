@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 
+#include "Log.h"
+
 struct Section {
     static int newID;
     
@@ -12,17 +14,23 @@ struct Section {
     static std::vector<Section> tabel;
     
     int id;
-    std::string name;
     int locationCounter;
+    std::string name;
     std::string data;
     std::string realocation;
     
-    Section(std::string _name);
-    
-    friend std::istream & operator >> (std::istream &in, Section &section);
-    friend std::ostream & operator << (std::ostream &out, const Section &section);
+    Section(std::string name);
+    Section(){LOG("ERROR");}
     
     static bool isNameValid(std::string name);
+    static int withName(std::string name);
+    static void prepareForSecondPass();
+
+    static void move(int count);
+    static void fill(std::string data);
+
+    friend std::istream & operator >> (std::istream &in, Section &section);
+    friend std::ostream & operator << (std::ostream &out, const Section &section);
 };
 
 #endif

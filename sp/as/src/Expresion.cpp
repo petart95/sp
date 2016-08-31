@@ -54,9 +54,9 @@ Value simbol() {
 		simbol += get();
 	}
 
-	for(long long i=0; i<simbolTabel.size(); i++) {
-		if(simbol.compare(simbolTabel[i].name) == 0) {
-			return Value(simbolTabel[i]);
+	for(long long i=0; i<Simbol::tabel.size(); i++) {
+		if(simbol.compare(Simbol::tabel[i].name) == 0) {
+			return Value(Simbol::tabel[i]);
 		}
 	}
 

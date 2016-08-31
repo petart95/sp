@@ -6,7 +6,7 @@
 #include <fstream>
 #include <sstream>
 #include <iomanip>
-#include <stdlib.h>
+#include <cstdlib>
 
 std::vector<std::string> splitStringWhitCharacterSet (std::string stringToSplit, std::string characterSet);
 

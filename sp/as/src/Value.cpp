@@ -205,22 +205,22 @@ void Value::error() {
 }
 
 void Value::addRealocatioDataForType(std::string type) {
-	if(simbolID != -1 && !simbolTabel[simbolID].isDefined) {
+	if(simbolID != -1 && !Simbol::tabel[simbolID].isDefined) {
 		std::stringstream realocationStream;
 
 		realocationStream << "  ";
 		realocationStream << std::left << std::setw(9) << std::setfill(' ')
-				  << toHexadecimal(sectionTabel[currentSectionIndex].locationCounter, 8);
+				  << toHexadecimal(Section::tabel[Section::current].locationCounter, 8);
 		realocationStream << std::left << std::setw(20) << std::setfill(' ') << type;
 		realocationStream << std::left << std::setw(4) << std::setfill(' ') << simbolID;
 		realocationStream << "\n";
 
-		if(sectionTabel[currentSectionIndex].realocation.find(realocationStream.str()) == std::string::npos) {
-			sectionTabel[currentSectionIndex].realocation += realocationStream.str();
+		if(Section::tabel[Section::current].realocation.find(realocationStream.str()) == std::string::npos) {
+			Section::tabel[Section::current].realocation += realocationStream.str();
 		}
 	} else if(isRelativ) {
-		for(int i = 0; i < simbolTabel.size(); i++) {
-			if(sectionTabel[sectionID].name.compare(simbolTabel[i].name) == 0) {
+		for(int i = 0; i < Simbol::tabel.size(); i++) {
+			if(Section::tabel[Section::current].name.compare(Simbol::tabel[i].name) == 0) {
 				simbolID = i;
 			}
 		}
@@ -229,13 +229,13 @@ void Value::addRealocatioDataForType(std::string type) {
 
 		realocationStream << "  ";
 		realocationStream << std::left << std::setw(9) << std::setfill(' ')
-				  << toHexadecimal(sectionTabel[currentSectionIndex].locationCounter, 8);
+				  << toHexadecimal(Section::tabel[Section::current].locationCounter, 8);
 		realocationStream << std::left << std::setw(20) << std::setfill(' ') << type;
 		realocationStream << std::left << std::setw(4) << std::setfill(' ') << simbolID;
 		realocationStream << "\n";
 
-		if(sectionTabel[currentSectionIndex].realocation.find(realocationStream.str()) == std::string::npos) {
-			sectionTabel[currentSectionIndex].realocation += realocationStream.str();
+		if(Section::tabel[Section::current].realocation.find(realocationStream.str()) == std::string::npos) {
+			Section::tabel[Section::current].realocation += realocationStream.str();
 		}
 	}
 }

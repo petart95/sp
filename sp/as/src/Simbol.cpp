@@ -2,6 +2,7 @@
 
 #include "Simbol.h"
 
+#include "Log.h"
 #include "as.h"
 
 int Simbol::newID = 0;
@@ -11,6 +12,18 @@ std::vector<Simbol> Simbol::tabel;
 Simbol::Simbol(std::string _name, int _offset, int _sectionIndex, bool _isDefined, bool _isGlobal) 
 : name(_name), offset(_offset), sectionIndex(_sectionIndex), isGlobal(_isGlobal), isDefined(_isDefined), id(newID++) {
 	tabel.push_back(*this);
+}
+
+int Simbol::withName(std::string name) {
+    int tabelSize = tabel.size();
+
+    for(int i = 0; i < tabelSize; i++) {
+        if(name.compare(tabel[i].name) == 0) {
+            return i;
+        }
+    }
+
+    return -1;
 }
 
 std::istream & operator >> (std::istream &in, Simbol &simbol) {}

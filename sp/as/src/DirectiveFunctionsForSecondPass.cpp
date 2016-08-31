@@ -23,9 +23,9 @@ void setDirectivFunctionsForSecondPass() {
 
 void publicDirectivFunctionForSecondPass(std::vector<std::string> directiv) {
 	for(int i = 1; i < directiv.size(); i++) {
-		for(int j = 0; j < simbolTabel.size(); j++) {
-			if(simbolTabel[j].name.compare(directiv[i]) == 0) {
-				simbolTabel[j].isGlobal = false;
+		for(int j = 0; j < Simbol::tabel.size(); j++) {
+			if(Simbol::tabel[j].name.compare(directiv[i]) == 0) {
+				Simbol::tabel[j].isGlobal = false;
 			}
 		}
 	}
@@ -33,39 +33,21 @@ void publicDirectivFunctionForSecondPass(std::vector<std::string> directiv) {
 
 void externDirectivFunctionForSecondPass(std::vector<std::string> directiv) {
 	for(int i = 1; i < directiv.size(); i++) {
-		for(int j = 0; j < simbolTabel.size(); j++) {
-			if(simbolTabel[j].name.compare(directiv[i]) == 0) {
-				simbolTabel[j].isGlobal = true;
+		for(int j = 0; j < Simbol::tabel.size(); j++) {
+			if(Simbol::tabel[j].name.compare(directiv[i]) == 0) {
+				Simbol::tabel[j].isGlobal = true;
 			}
 		}
 	}
 }
 
 void textDirectivFunctionForSecondPass(std::vector<std::string> directiv) {
-	for(int i = 0; i < sectionTabel.size(); i++) {
-		if(directiv[0].compare(sectionTabel[i].name) == 0) {
-			currentSectionIndex = i;
-			return;
-		}
-	}
 }
 
 void dataDirectivFunctionForSecondPass(std::vector<std::string> directiv) {
-	for(int i = 0; i < sectionTabel.size(); i++) {
-		if(directiv[0].compare(sectionTabel[i].name) == 0) {
-			currentSectionIndex = i;
-			return;
-		}
-	}
 }
 
 void bssDirectivFunctionForSecondPass(std::vector<std::string> directiv) {
-	for(int i = 0; i < sectionTabel.size(); i++) {
-		if(directiv[0].compare(sectionTabel[i].name) == 0) {
-			currentSectionIndex = i;
-			return;
-		}
-	}
 }
 
 void charDirectivFunctionForSecondPass(std::vector<std::string> directiv) {
@@ -76,11 +58,9 @@ void charDirectivFunctionForSecondPass(std::vector<std::string> directiv) {
 
 		int result = expresionEvaluated.value;
 
-		sectionTabel[currentSectionIndex].data += toHexadecimal(result, 2);
-
 		expresionEvaluated.addRealocatioDataForType("R_386_8");
 
-		sectionTabel[currentSectionIndex].locationCounter += 1;
+		Section::fill(toHexadecimal(result, 2));
 	}
 }
 
@@ -92,11 +72,9 @@ void wordDirectivFunctionForSecondPass(std::vector<std::string> directiv) {
 
 		int result = expresionEvaluated.value;
 
-		sectionTabel[currentSectionIndex].data += toHexadecimal(result, 4);
-
 		expresionEvaluated.addRealocatioDataForType("R_386_16");
 
-		sectionTabel[currentSectionIndex].locationCounter += 2;
+		Section::fill(toHexadecimal(result, 4));
 	}
 }
 
@@ -108,11 +86,9 @@ void longDirectivFunctionForSecondPass(std::vector<std::string> directiv) {
 
 		int result = expresionEvaluated.value;
 
-		sectionTabel[currentSectionIndex].data += toHexadecimal(result, 8);
-
 		expresionEvaluated.addRealocatioDataForType("R_386_32");
 
-		sectionTabel[currentSectionIndex].locationCounter += 4;
+		Section::fill(toHexadecimal(result, 8));
 	}
 }
 
@@ -123,16 +99,14 @@ void alignDirectivFunctionForSecondPass(std::vector<std::string> directiv) {
 		alignAmount = atoi(directiv[1].c_str());
 	}
 
-	if(sectionTabel[currentSectionIndex].locationCounter % alignAmount != 0) {
-		int offset = alignAmount - sectionTabel[currentSectionIndex].locationCounter % alignAmount;
-		sectionTabel[currentSectionIndex].data += std::string(2*offset, '0');
-		sectionTabel[currentSectionIndex].locationCounter += offset;
+	if(Section::tabel[Section::current].locationCounter % alignAmount != 0) {
+		int offset = alignAmount - Section::tabel[Section::current].locationCounter % alignAmount;
+		Section::fill(std::string(2*offset, '0'));
 	}
 }
 
 void skipDirectivFunctionForSecondPass(std::vector<std::string> directiv) {
-	sectionTabel[currentSectionIndex].data += std::string(2*atoi(directiv[1].c_str()), '0');
-	sectionTabel[currentSectionIndex].locationCounter += atoi(directiv[1].c_str());
+	Section::fill(std::string(2*atoi(directiv[1].c_str()), '0'));
 }
 
 void endDirectivFunctionForSecondPass(std::vector<std::string> directiv) {

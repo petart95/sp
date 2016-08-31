@@ -7,7 +7,7 @@
 
 #include "Log.h"
 
-#ifdef LOG
+#ifdef LOGG
 
 FILE* logFile = stdout;
 volatile bool logging = false;
