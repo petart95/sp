@@ -64,7 +64,7 @@ void Section::move(int count) {
 void Section::fill(std::string data) {
     tabel[current].data += data;
 
-    Section::move(data.length() / 2);
+    Section::move(2 * data.length());
 }
 
 std::istream & operator >> (std::istream &in, Section &section) {
