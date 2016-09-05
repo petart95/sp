@@ -26,7 +26,11 @@ int Simbol::withName(std::string name) {
     return -1;
 }
 
-std::istream & operator >> (std::istream &in, Simbol &simbol) {}
+std::istream & operator >> (std::istream &in, Simbol &simbol) {
+    // TODO
+    return in;
+}
+
 std::ostream & operator << (std::ostream &out, const Simbol &simbol) {
     out << "  ";
     out << std::left << std::setw(4) << std::setfill(' ') << simbol.id;
@@ -36,6 +40,8 @@ std::ostream & operator << (std::ostream &out, const Simbol &simbol) {
     out << std::left << std::setw(13) << std::setfill(' ') << (simbol.isGlobal ? "Global" : "Local");
     out << std::left << std::setw(18) << std::setfill(' ') << (simbol.isDefined ? "Defined" : "Undefnded");
     out << "\n";
+    
+    return out;
 }
 
 std::string Simbol::tabelRows() {

@@ -1,6 +1,6 @@
 #include "ProcessString.h"
 #include "Operation.hpp"
-#include "DirectiveFunctions.h"
+#include "Directive.h"
 #include "Error.h"
 #include "Log.h"
 #include "Section.h"
@@ -50,9 +50,6 @@ void init(int argc, char** argv) {
 
     // Open files
     openFiles(std::string(argv[1]));
-
-    // Initlize functions for first pass
-    setDirectivFunctionsForFirstPass();
 }
 
 /**
@@ -65,12 +62,9 @@ void initForSeconPass() {
     // Return to the begining of the file
     in.clear();
     in.seekg (0, std::ios::beg);
-
-    // Initlize functions for second pass
-    setDirectivFunctionsForSecondPass();
-
+    
     // Initalize data for second pass
-    isExitFlagSet = false;
+    Directive::endFound = false;
 
     Section::prepareForSecondPass();
 }
@@ -134,9 +128,9 @@ void processLineFirstPass(std::string line) {
     if(Section::isNameValid(split[0])) {
         // Found  section
         Section(std::string(split[0]));
-    } else if(isDirectivSupported(split[0])) {
+    } else if(Directive::isNameValid(split[0])) {
         // Found directiv
-        (*handelDirectiv[split[0]])(split);
+        (*Directive::functionForFirstPass[split[0]])(split);
     } else {
         // Increas location counter by operation size 
         // All operation have size 4.
@@ -175,9 +169,9 @@ void processLineSecondPass(std::string line) {
     if(Section::isNameValid(split[0])) {
         // Found  section
         Section::current = Section::withName(split[0]);
-    } else if(isDirectivSupported(split[0])) {
+    } else if(Directive::isNameValid(split[0])) {
         // Found directiv
-        (*handelDirectiv[split[0]])(split);
+        (*Directive::functionForSecondPass[split[0]])(split);
     } else {
         Operation operation(split);
         
@@ -196,21 +190,21 @@ void processLineSecondPass(std::string line) {
 }
 
 int main(int argc, char** argv) {
-    LOG("Initalize as for first pass");
+    LOG("Open files");
     init(argc, argv);
     
     std::string line;
     
     LOG("First pass");   
-    while (getline(in, line) && !isExitFlagSet) {
+    while (getline(in, line) && !Directive::endFound) {
         processLineFirstPass(removeCommentsFromLine(line));
     }
 
-    LOG("Initalize as for second pass");
+    LOG("Initalize assembler for second pass");
     initForSeconPass();
 
     LOG("Second pass");
-    while (getline(in, line) && !isExitFlagSet) {
+    while (getline(in, line) && !Directive::endFound) {
         processLineSecondPass(removeCommentsFromLine(line));
     }
 
@@ -225,7 +219,7 @@ int main(int argc, char** argv) {
         out << "\n" << Section::tabel[i];
     }    
 
-    LOG("Close");
+    LOG("Close files");
     closeLog();
 
     in.close();

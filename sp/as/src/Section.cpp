@@ -67,8 +67,13 @@ void Section::fill(std::string data) {
     Section::move(data.length() / 2);
 }
 
+int Section::offset() {
+    return tabel[current].locationCounter;
+}
+
 std::istream & operator >> (std::istream &in, Section &section) {
-    
+    // TODO
+    return in;
 }
 
 std::ostream & operator << (std::ostream &out, const Section &section) {
@@ -85,4 +90,6 @@ std::ostream & operator << (std::ostream &out, const Section &section) {
     out << std::left << std::setw(4) << std::setfill(' ') << "Simbol ID";
     out << "\n";
     out << section.realocation;
+    
+    return out;
 }

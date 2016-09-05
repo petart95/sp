@@ -20,7 +20,6 @@ struct Section {
     std::string realocation;
     
     Section(std::string name);
-    Section(){LOG("ERROR");}
     
     static bool isNameValid(std::string name);
     static int withName(std::string name);
@@ -28,6 +27,7 @@ struct Section {
 
     static void move(int count);
     static void fill(std::string data);
+    static int offset();
 
     friend std::istream & operator >> (std::istream &in, Section &section);
     friend std::ostream & operator << (std::ostream &out, const Section &section);

@@ -3,26 +3,21 @@
 
 #include <string>
 #include <vector>
+#include <map>
+
+#define ALIGN_AMOUNT 4
 
 typedef void (*DirectiveFunctionPointer)(std::vector<std::string> directiv);
 
 struct Directive {
-    std::string name;
-    std::vector<std::string> arguments;
+    static bool endFound;
 
-    std::string fill;
-    bool shouldFill;
+    static std::map<std::string, DirectiveFunctionPointer> functionForFirstPass;
+    static std::map<std::string, DirectiveFunctionPointer> functionForSecondPass;
     
-    bool shouldEnd;
-    static bool didEnd;
-
-    DirectiveFunctionPointer functionForFirstPass;
-    DirectiveFunctionPointer functionForSecondPass;
-
-    Directive(std::vector<std::string> directive);
+    static bool isNameValid(std::string name);
     
-    void firstPass();
-    void secondPass();
+    static void emptyFunction(std::vector<std::string> directiv) {}
 };
 
 #endif /* DIRECTIVE_H_ */
