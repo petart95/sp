@@ -1,13 +1,5 @@
-//
-//  CreateMap.hpp
-//  sp
-//
-//  Created by maxeler on 8/25/16.
-//  Copyright © 2016 ptrifunovic. All rights reserved.
-//
-
-#ifndef CreateMap_hpp
-#define CreateMap_hpp
+#ifndef CREATEMAP_H
+#define CREATEMAP_H
 
 #include <map>
 
@@ -31,4 +23,9 @@ public:
     }
 };
 
-#endif /* CreateMap_hpp */
+template <typename T, typename U>
+bool contains(std::map<T, U> & map, T val) {
+    return map.find(val) != map.end();
+}
+
+#endif

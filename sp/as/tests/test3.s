@@ -1,6 +1,6 @@
 	.data
 reci:	.word 1,2,3,4,5
-char:	.char 'A',1+2*3,drugi+24
+char:	.char 'A',1+2-3,drugi+24
 hptr: 	.word 0 @ ar ara ar a a
 tptr: 	.word 0 // kometar a a 
 buffer: .skip 512
@@ -9,6 +9,7 @@ align2:	.align 64
 drugi:	.skip 55
 	.extern end
 a:	.long (hptr-tptr+4)<<2
+	.extern printf,d
 	.text.prvi
 start: 	sub r1,r1
 	add r1,1<<4

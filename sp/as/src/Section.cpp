@@ -1,8 +1,7 @@
 #include <algorithm>
 
 #include "Section.h"
-
-#include "as.h"
+#include "Simbol.h"
 
 int Section::newID = 0;
 

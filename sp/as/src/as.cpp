@@ -1,13 +1,18 @@
 #include "ProcessString.h"
 #include "Operation.hpp"
 #include "Directive.h"
-#include "Error.h"
-#include "Log.h"
 #include "Section.h"
 #include "Simbol.h"
+#include "Error.h"
+#include "Log.h"
+
 
 std::ifstream in;
 std::ofstream out;
+
+std::string inFile;
+int currentLineNumber = 0;
+int currentColumNumber = -1;
 
 /**
  * @brief Opens all files.
@@ -49,7 +54,8 @@ void init(int argc, char** argv) {
     }
 
     // Open files
-    openFiles(std::string(argv[1]));
+    inFile = std::string(argv[1]);
+    openFiles(inFile);
 }
 
 /**
@@ -67,6 +73,8 @@ void initForSeconPass() {
     Directive::endFound = false;
 
     Section::prepareForSecondPass();
+
+    currentLineNumber = 0;
 }
 
 /**
@@ -175,17 +183,16 @@ void processLineSecondPass(std::string line) {
     } else {
         Operation operation(split);
         
-        // Check if operation valid
-        if(operation.isOperationValid()) {
-            // Fill in section data.
-            Section::fill(operation.createHexRepresentation());
-        } else {
-            if(!operation.opcode.isValid) {
-                ERROR("Opcode for operation: '", line, "' is invalid");
-            } else {
-                ERROR("Operands for operationl: ' " , line, "' are invalid");
-            }
+        if(!operation.opcode.isValid) {
+            ERROR("Opcode for operation: '", line, "' is invalid");
         }
+
+        if(!operation.operands.areValid){
+            ERROR("Operands for operationl: ' " , line, "' are invalid");
+        }
+
+        // Fill in section data.
+        Section::fill(operation.createHexRepresentation());
     }
 }
 
@@ -198,6 +205,7 @@ int main(int argc, char** argv) {
     LOG("First pass");   
     while (getline(in, line) && !Directive::endFound) {
         processLineFirstPass(removeCommentsFromLine(line));
+        currentLineNumber++;
     }
 
     LOG("Initalize assembler for second pass");
@@ -206,6 +214,7 @@ int main(int argc, char** argv) {
     LOG("Second pass");
     while (getline(in, line) && !Directive::endFound) {
         processLineSecondPass(removeCommentsFromLine(line));
+        currentLineNumber++;
     }
 
     LOG("Output simbol tabel");

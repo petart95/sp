@@ -34,11 +34,21 @@ std::vector<std::string> splitStringWhitCharacterSet(std::string stringToSplit, 
 }
 
 bool isIntager(std::string s) {
+    if(s[0] == '0' && (s[1] == 'x' || s[1] == 'X' || s[1] == 'b' || s[1] == 'B')) {
+        s = s.substr(2);
+    } 
+
     return s.find_first_not_of("0123456789") == std::string::npos;
 }
 
 int toIntager(std::string s) {
-    return atoi(s.c_str());
+    std::stringstream stringStream(s);
+
+    int result;
+
+    stringStream >> std::setbase(0) >> result;
+
+    return result;
 }
 
 std::string toUpper(std::string s) {
@@ -46,3 +56,72 @@ std::string toUpper(std::string s) {
     
     return s;
 }
+
+bool contains(std::string s, std::string sub) {
+    return s.find(sub) != std::string::npos;
+}
+
+bool contains(std::string s, char sub) {
+    return s.find(sub) != std::string::npos;
+}
+
+std::string trim(const std::string& str,
+                 const std::string& whitespace) {
+    const int strBegin = str.find_first_not_of(whitespace);
+    if (strBegin == std::string::npos)
+        return ""; // no content
+
+    const int strEnd = str.find_last_not_of(whitespace);
+    const int strRange = strEnd - strBegin + 1;
+
+    return str.substr(strBegin, strRange);
+}
+
+std::string reduce(const std::string& str,
+                   const std::string& fill,
+                   const std::string& whitespace) {
+    // trim first
+    std::string result = trim(str, whitespace);
+
+    // replace sub ranges
+    int beginSpace = result.find_first_of(whitespace);
+    while (beginSpace != std::string::npos) {
+        const int endSpace = result.find_first_not_of(whitespace, beginSpace);
+        const int range = endSpace - beginSpace;
+
+        result.replace(beginSpace, range, fill);
+
+        const int newStart = beginSpace + fill.length();
+        beginSpace = result.find_first_of(whitespace, newStart);
+    }
+
+    return result;
+}
+
+std::string readNthLine(const std::string& filename, int n) {
+    std::ifstream in(filename.c_str());
+
+    std::string s;  
+
+    //skip N lines
+    for(int i = 0; i < n; ++i) {
+        std::getline(in, s);
+    }
+
+    std::getline(in,s);
+
+    in.close();
+
+    return s; 
+}
+
+std::string repeatNTimes(const std::string& s, int n) {
+    std::string res("");  
+
+    for(int i = 0; i < n; ++i) {
+        res += s;
+    }
+
+    return res;
+}
+

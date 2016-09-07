@@ -13,6 +13,7 @@
 #include "Log.h"
 
 #include "Expresion.h"
+#include "Argument.h"
 
 Operation::Operands::Operands(std::vector<std::string> _value, std::string _type)
     : value(_value), type(splitStringWhitCharacterSet(_type, ",")), areValid(true) {
@@ -107,7 +108,7 @@ Operand Operation::Operands::parseOperandWithType(std::string value, std::string
     } else {
 	Expresion expresion(value);
 
-	Value expresionEvaluated = expresion.evaluate();
+	Argument expresionEvaluated = expresion.evaluate();
 	
 	expresionEvaluated.addRealocatioDataForType(type);
 

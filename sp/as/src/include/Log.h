@@ -54,7 +54,7 @@ inline void closeLog() {
 }
 
 inline void log(const char* format, ...) {
-	#ifdef LOG
+	#ifdef LOGG
 	va_list args;
 	va_start(args, format);
 	vlog(format, args);

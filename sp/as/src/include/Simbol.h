@@ -17,7 +17,7 @@ struct Simbol {
     bool isGlobal;
     bool isDefined;
 
-    Simbol(std::string _name, int _offset, int _sectionIndex, bool _isDefined = true, bool _isGlobal = false);
+    Simbol(std::string _name, int _offset, int _sectionIndex, bool _isDefined = true, bool _isGlobal = false, bool update = false);
     
     static std::string tabelRows();
     static int withName(std::string name);
@@ -27,5 +27,4 @@ struct Simbol {
 };
 
 #endif /* SIMBOL_H_ */
-
 

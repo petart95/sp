@@ -1,226 +1,242 @@
+#include <algorithm>
+
 #include "Expresion.h"
+#include "ProcessString.h"
+#include "CreateVector.h"
+#include "Error.h"
+#include "Log.h"
 
-const char * expressionToParse;
+#define ERROR_PREFIX "Invalid expresion: "
 
-char peek() {
-	return expressionToParse[0];
+#define END_TOKEN "!end!"
+
+std::vector<std::string> tokens;
+
+std::string peek() {
+    if(tokens[0] != END_TOKEN) {
+        setErrorColumToBeginingOfString(tokens[0]);
+    }
+
+    return tokens[0];
 }
 
-char get() {
-	return *expressionToParse++;
+std::string get() {
+    if(tokens.size() == 0) {
+        ERROR("expected more arguments");
+    }
+
+    std::string result = tokens[0];
+
+    tokens.erase(tokens.begin());
+
+    if(result != END_TOKEN) {
+        setErrorColumToBeginingOfString(result);
+    }
+
+    return result;
 }
 
-char back() {
-	return *expressionToParse--;
+Argument expression();
+
+Argument word(std::string word) {
+    long long base = 256;
+
+    long long result = 0;
+    for (int i=1; i<word.length() && word[i]!='\'' && word[i]!='"'; i++) {
+        result = base*result + word[i];
+    }
+
+    return Argument(result);
 }
 
-char peekInfront() {
-	return expressionToParse[1];
+bool isWord(std::string word) {
+    return word[0] == '\'' || word[0] == '"';
 }
 
-Value expression();
+Argument factor() {
+    std::string argument = get();
 
-Value number() {
-	long long base = 10;
-	if(peek() == '0') {
-		get(); // '0'
-		if(peek() == 'x' || peek() == 'X') {
-			get(); // 'x' || 'X'
-			base = 16;
-		} else if(peek() == 'b' || peek() == 'B') {
-			get(); // 'b' || 'B'
-			base = 2;
-		} else if(peek() >= '0' && peek() <= '7') {
-			base = 8;
-		} else {
-			return 0;
-		}
-	}
+    if (isIntager(argument)) {
+        return Argument(toIntager(argument));
+    } else if (Simbol::withName(argument) != -1) {
+        return Argument(Simbol::tabel[Simbol::withName(argument)]);
+    } else if (isWord(argument)) {
+        return word(argument);
+    } else if (argument == "(") {
+        Argument result = expression();
+        
+        std::string bracket = get();
+        if(bracket != ")") {
+            ERROR("expected '", BOLD(")"), "' before '", BOLD(bracket), "'");
+        }
 
-	long long result = get() - '0';
-	while ((base == 10 && isdigit(peek())) ||
-	       (base == 16 && (isdigit(peek()) || (peek()>='a' && peek()<='f') || (peek()>='A' && peek()<='F'))) ||
-	       (base == 8 && (peek()>='0' && peek()<='7')) ||
-	       (base == 2 && (peek()>='0' && peek()<='1'))) {
-		result = base*result + get() - '0';
-	}
+        return result;
+    } else if (argument == "-") {
+        return factor().updateForNegation();
+    } else if (argument == "~") {
+        return factor().updateForComplementation();
+    } else if(argument != END_TOKEN){
+        ERROR("argument '", BOLD(argument), 
+              "' was not declared in this scope");
+    }
 
-	return Value(result);
+    return 0;
 }
 
-Value simbol() {
-	std::string simbol = "";
-	while (isalpha(peek()) || peek() == '.') {
-		simbol += get();
-	}
+Argument termHighestPrecedence() {
+    Argument result = factor();
 
-	for(long long i=0; i<Simbol::tabel.size(); i++) {
-		if(simbol.compare(Simbol::tabel[i].name) == 0) {
-			return Value(Simbol::tabel[i]);
-		}
-	}
+    std::vector<std::string> highestPrecedenceOperators =
+        createVector<std::string>("*")("/")("%")(">>")("<<");
 
-	// simbol not found
-	return Value(Simbol(simbol, 0, 0, false, true));
+    while (contains(highestPrecedenceOperators, peek())){
+        std::string operand = get();
+
+        if (operand == "*") {
+            result *= factor();
+        } else if (operand == "/") {
+            result /= factor();
+        } else if (operand == "%") {
+            result %= factor();
+        } else if (operand == ">>") {
+            result >>= factor();
+        } else if (operand == "<<") {
+            result <<= factor();
+        }
+    }
+
+    return result;
 }
 
-Value word() {
-	long long base = 256;
+Argument termIntermediatePrecedence() {
+    Argument result = termHighestPrecedence();
 
-	long long result = get();
-	while (isalpha(peek())) {
-		result = base*result + get();
-	}
+    std::vector<std::string> intermediatePrecedenceOperators =
+        createVector<std::string>("&")("|")("^");
 
-	return Value(result);
+    while (contains(intermediatePrecedenceOperators, peek())){
+        std::string operand = get();
+
+        if (operand == "&") {
+            result &= termHighestPrecedence();
+        } else if (operand == "|") {
+            result |= termHighestPrecedence();
+        } else if (operand == "^") {
+            result ^= termHighestPrecedence();
+        }
+    }
+
+    return result;
 }
 
-Value factor() {
-	if (isdigit(peek())) {
-		return number();
-	} else if (isalpha(peek()) || peek() == '.') {
-		return simbol();
-	} else if (peek() == '\'') {
-		get(); // '''
-		Value result = word();
-		if(peek() == '\''){
-			get(); // '''
-		}
-		return result;
-	} else if (peek() == '(') {
-		get(); // '('
-		Value result = expression();
-		get(); // ')'
-		return result;
-	} else if (peek() == '-') {
-		get(); // '-'
-		Value result = factor();
-		result.updateForNegation();
-		return result;
-	} else if (peek() == '~') {
-		get(); // '~'
-		Value result = factor();
-		result.updateForComplementation();
-		return result;
-	}
+Argument termLowPrecedence() {
+    Argument result = termIntermediatePrecedence();
 
-	return 0; // error
+    std::vector<std::string> lowPrecedenceOperators =
+        createVector<std::string>("+")("-")("==")("!=")("<=")(">=")("<")(">");
+
+    while (contains(lowPrecedenceOperators, peek())){
+        std::string operand = get();
+
+        if (operand == "+") {
+            result += termIntermediatePrecedence();
+        } else if (operand == "-") {
+            result -= termIntermediatePrecedence();
+        } else if (operand == "==") {
+            result = result == termIntermediatePrecedence();
+        } else if (operand == "!=") {
+            result = result != termIntermediatePrecedence();
+        } else if (operand == "<=") {
+            result = result <= termIntermediatePrecedence();
+        } else if (operand == ">=") {
+            result = result >= termIntermediatePrecedence();
+        } else if (operand == "<") {
+            result = result < termIntermediatePrecedence();
+        } else if (operand == ">") {
+            result = result > termIntermediatePrecedence();
+        }
+    }
+
+    return result;
 }
 
-Value termHighestPrecedence() {
-	Value result = factor();
+Argument expression() {
+    Argument result = termLowPrecedence();
 
-	while ((peek() == '*') || (peek() == '/') || (peek() == '%') ||
-	       (peek() == '>' && peekInfront() == '>') ||
-	       (peek() == '<' && peekInfront() == '<')) {
-		if (peek() == '*') {
-			get(); // '*'
-			result.updateForMultiplication(factor());
-		} else if (peek() == '/') {
-			get(); // '/'
-			result.updateForDivision(factor());
-		} else if (peek() == '%') {
-			get(); // '%'
-			result.updateForRemainder(factor());
-		} else if (peek() == '>') {
-			get(); // '>'
-			get(); // '>'
-			result.updateForShiftRight(factor());
-		} else if (peek() == '<') {
-			get(); // '<'
-			get(); // '<'
-			result.updateForShiftLeft(factor());
-		}
-	}
+    std::vector<std::string> lowestPrecedenceOperators =
+        createVector<std::string>("&&")("||");
 
-	return result;
+    while (contains(lowestPrecedenceOperators, peek())){
+        std::string operand = get();
+
+        if (operand == "&&") {
+            result = result && termLowPrecedence();
+        } else if (operand == "||") {
+            result = result || termLowPrecedence();
+        }
+    }
+
+    return result;
 }
 
-Value termIntermediatePrecedence() {
-	Value result = termHighestPrecedence();
+void splitStringIntoTokens(std::string s) {
+    tokens.clear();
 
-	while ((peek() == '^') ||
-	       (peek() == '|' && peekInfront() != '|') ||
-	       (peek() == '&' && peekInfront() != '&')) {
-		if (peek() == '|') {
-			get(); // '|'
-			result.updateForBitwiseInclusiveOr(termHighestPrecedence());
-		} else if (peek() == '&') {
-			get(); // '&'
-			result.updateForBitwiseAnd(termHighestPrecedence());
-		} else if (peek() == '^') {
-			get(); // '^'
-			result.updateForBitwiseExclusiveOr(termHighestPrecedence());
-		}
-	}
+    std::string complexOperators("><!=|&"), simpleOperators("()+-*/%^~");
+    std::string token("");
+    bool inOperator = false;
 
-	return result;
+    for(int i = 0; i < s.length(); i++) {
+        if(isspace(s[i])) {
+            continue;
+        }
+
+        if(token != "" && contains(simpleOperators, token)) {
+            tokens.push_back(token);
+            token = "";
+        } else if(token != "" && contains(complexOperators, token[0])) {
+            inOperator = true;
+        } else {
+            inOperator = false;
+        }
+
+        if((contains(simpleOperators, s[i])) ||
+           (!contains(complexOperators, s[i]) && inOperator) ||
+           (contains(complexOperators, s[i]) && !inOperator)) {
+            if(token != "") {
+                tokens.push_back(token);
+            }
+
+            token = "";
+        }
+
+        token += s[i];
+    }
+
+    if(token != "") {
+        tokens.push_back(token);
+    }
+
+    tokens.push_back(END_TOKEN);
 }
 
-Value termLowPrecedence() {
-	Value result = termIntermediatePrecedence();
+Argument Expresion::evaluate() {
+    splitStringIntoTokens(expresion);
 
-	while ((peek() == '+') || (peek() == '-') ||
-	       (peek() == '=' && peekInfront() == '=') ||
-	       (peek() == '!' && peekInfront() == '=') ||
-	       (peek() == '>' && peekInfront() == '=') ||
-	       (peek() == '<' && peekInfront() == '=') ||
-	       (peek() == '>' && peekInfront() != '>') ||
-	       (peek() == '<' && peekInfront() != '<')) {
-		if (peek() == '+') {
-			get(); // '+'
-			result.updateForAdditionWith(termIntermediatePrecedence());
-		} else if (peek() == '-') {
-			get(); // '-'
-			result.updateForSubstactionWith(termIntermediatePrecedence());
-		} else if (peek() == '=' && peekInfront() == '=') {
-			get(); // '='
-			get(); // '='
-			result.updateForIsEqualTo(termIntermediatePrecedence());
-		} else if (peek() == '!' && peekInfront() == '=') {
-			get(); // '!'
-			get(); // '='
-			result.updateForIsNotEqualTo(termIntermediatePrecedence());
-		} else if (peek() == '>' && peekInfront() == '=') {
-			get(); // '>'
-			get(); // '='
-			result.updateForIsGreaterThanOrEqualTo(termIntermediatePrecedence());
-		} else if (peek() == '<' && peekInfront() == '=') {
-			get(); // '<'
-			get(); // '='
-			result.updateForIsLessThanOrEqualTo(termIntermediatePrecedence());
-		} else if (peek() == '>' && peekInfront() != '>') {
-			get(); // '>'
-			result.updateForIsGreaterThanOrEqualTo(termIntermediatePrecedence());
-		} else if (peek() == '<' && peekInfront() != '<') {
-			get(); // '<'
-			result.updateForIsLessThan(termIntermediatePrecedence());
-		}
-	}
+    Argument result = expression();
 
-	return result;
+    if(peek() != END_TOKEN) {
+        ERROR("too many arguments");
+    } else {
+        LOG(expresion ," = ", result.value);
+    }
+
+    return result;
 }
 
-Value expression() {
-	Value result = termLowPrecedence();
+Argument expresion(std::string s) {
+    Expresion exp(s);
 
-	while ((peek() == '|' && peekInfront() == '|') ||
-	       (peek() == '&' && peekInfront() == '&')) {
-		if (peek() == '|' && peekInfront() == '|') {
-			result.updateForLogicalOr(termLowPrecedence());
-		} else if (peek() == '&' && peekInfront() == '&') {
-			result.updateForLogicalAnd(termLowPrecedence());
-		}
-	}
-
-	return result;
-}
-
-Value Expresion::evaluate() {
-	expressionToParse = expresion.c_str();
-
-	Value result = expression();
-
-	return result;
+    return exp.evaluate();
 }
 

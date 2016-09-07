@@ -34,8 +34,9 @@ std::map<std::string, std::string> Operation::operandTypeForOpcode = createMap<s
     ("ldcl", "R_386_4,R_386_16");
 
 Operation::Operation(std::vector<std::string> operation)
-    : opcode(operation[0]), operands(std::vector<std::string>(operation.begin() + 1, operation.end()),
-                                     operandTypeForOpcode[opcode.name]) {
+    : opcode(operation[0]), 
+      operands(std::vector<std::string>(operation.begin() + 1, operation.end()),
+                                        operandTypeForOpcode[opcode.name]) {
 }
 
 std::string Operation::createHexRepresentation(){

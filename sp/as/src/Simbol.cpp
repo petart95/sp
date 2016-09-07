@@ -2,16 +2,37 @@
 
 #include "Simbol.h"
 
-#include "Log.h"
-#include "as.h"
+#include "Error.h"
 
 int Simbol::newID = 0;
 
 std::vector<Simbol> Simbol::tabel;
 
-Simbol::Simbol(std::string _name, int _offset, int _sectionIndex, bool _isDefined, bool _isGlobal) 
-: name(_name), offset(_offset), sectionIndex(_sectionIndex), isGlobal(_isGlobal), isDefined(_isDefined), id(newID++) {
-	tabel.push_back(*this);
+Simbol::Simbol(std::string _name,
+               int _offset,
+               int _sectionIndex,
+               bool _isDefined,
+               bool _isGlobal,
+               bool update) 
+    : name(_name),
+      offset(_offset),
+      sectionIndex(_sectionIndex),
+      isGlobal(_isGlobal),
+      isDefined(_isDefined),
+      id(newID++) {
+    int index = withName(name);
+
+    if(index != -1) {
+        if(tabel[index].isDefined && !update) {
+            ERROR("Multiple definision of '", BOLD(name), "'");
+        } else {
+            tabel[index].offset = offset;
+            tabel[index].sectionIndex = sectionIndex;
+            tabel[index].isDefined = isDefined;
+        }
+    } else {
+        tabel.push_back(*this);
+    }
 }
 
 int Simbol::withName(std::string name) {

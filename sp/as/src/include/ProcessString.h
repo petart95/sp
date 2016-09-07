@@ -29,4 +29,18 @@ int toIntager(std::string s);
 
 std::string toUpper(std::string s);
 
+bool contains(std::string s, std::string sub);
+bool contains(std::string s, char sub);
+
+std::string trim(const std::string& str,
+                 const std::string& whitespace = " \t");
+
+std::string reduce(const std::string& str,
+                   const std::string& fill = " ",
+                   const std::string& whitespace = " \t");
+
+std::string readNthLine(const std::string& filename, int n);
+
+std::string repeatNTimes(const std::string& s, int n);
+
 #endif /* PROCESS_STRING_H_ */
