@@ -101,5 +101,9 @@ std::map<std::string, DirectiveFunctionPointer> Directive::functionForFirstPass 
     (".ascii", &asciiDirectivFunctionForFirstPass)
     (".asciz", &ascizDirectivFunctionForFirstPass)
     (".set", &setDirectivFunctionForFirstPass)
-    (".equ", &setDirectivFunctionForFirstPass);
+    (".equ", &setDirectivFunctionForFirstPass)
+    (".print", &Directive::emptyFunction)
+    (".err", &Directive::emptyFunction)
+    (".error", &Directive::emptyFunction)
+    (".warning", &Directive::emptyFunction);
 

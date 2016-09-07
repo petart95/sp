@@ -6,6 +6,8 @@
 #include "CreateMap.hpp"
 #include "ProcessString.h"
 #include "Error.h"
+#include "Warning.h"
+#include "as.h"
 
 std::string createFillData(std::vector<std::string> arguments, int size) {
     int argumentsSize = arguments.size();
@@ -95,6 +97,54 @@ void setDirectivFunctionForSecondPass(std::vector<std::string> directiv) {
     Simbol(directiv[1], exp.value, exp.sectionID, true, false, true);
 }
 
+void printDirectivFunctionForSecondPass(std::vector<std::string> directiv) {
+    if(directiv.size() != 2) {
+        ERROR("'", BOLD(directiv[0]), "' must have one arguments");
+    }
+
+    if(!contains(directiv[1], '"')) {
+        WARNING("Strings must be placed between '", BOLD("\""), "'");
+    }
+
+    std::string prefix(inFile + ":" + toString(currentLineNumber) + ":");
+    printf("%s%s\n",(BOLD(prefix + BLU(" message: "))).c_str(),
+                    removeCharacterSetFromString(directiv[1], "\'\"").c_str());
+}
+
+void errDirectivFunctionForSecondPass(std::vector<std::string> directiv) {
+    if(directiv.size() != 1) {
+        ERROR("'", BOLD(directiv[0]), "' must have zero arguments");
+    }
+
+    ERROR(".error directive invoked in source file");
+}
+
+void errorDirectivFunctionForSecondPass(std::vector<std::string> directiv) {
+    if(directiv.size() == 1) {
+        ERROR(".error directive invoked in source file");
+    } else if (directiv.size() == 2) {
+        if(!contains(directiv[1], '"')) {
+            WARNING("Strings must be placed between '", BOLD("\""), "'");
+        }
+
+        ERROR(removeCharacterSetFromString(directiv[1], "\'\""));
+    } else {
+        ERROR("'", BOLD(directiv[0]), "' must have zero or one arguments");
+    }
+}
+
+void warningDirectivFunctionForSecondPass(std::vector<std::string> directiv) {
+    if(directiv.size() != 2) {
+        ERROR("'", BOLD(directiv[0]), "' must have one arguments");
+    }
+
+    if(!contains(directiv[1], '"')) {
+        WARNING("Strings must be placed between '", BOLD("\""), "'");
+    }
+
+    WARNING(removeCharacterSetFromString(directiv[1], "\'\""));
+}
+
 std::map<std::string, DirectiveFunctionPointer> Directive::functionForSecondPass =
     createMap<std::string, DirectiveFunctionPointer>
     (".extern", &Directive::emptyFunction)
@@ -115,5 +165,9 @@ std::map<std::string, DirectiveFunctionPointer> Directive::functionForSecondPass
     (".ascii", &asciiDirectivFunctionForSecondPass)
     (".asciz", &ascizDirectivFunctionForSecondPass)
     (".set", &setDirectivFunctionForSecondPass)
-    (".equ", &setDirectivFunctionForSecondPass);
+    (".equ", &setDirectivFunctionForSecondPass)
+    (".print", &printDirectivFunctionForSecondPass)
+    (".err", &errDirectivFunctionForSecondPass)
+    (".error", &errorDirectivFunctionForSecondPass)
+    (".warning", &warningDirectivFunctionForSecondPass);
 

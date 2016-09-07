@@ -43,4 +43,6 @@ std::string readNthLine(const std::string& filename, int n);
 
 std::string repeatNTimes(const std::string& s, int n);
 
+std::string removeCharacterSetFromString(std::string str, std::string charsToRemove);
+
 #endif /* PROCESS_STRING_H_ */

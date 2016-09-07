@@ -89,6 +89,23 @@ typedef void (*DirectiveFunctionPointer)(std::vector<std::string> directiv);
  *                     - It assembles each string,
  *                       with automatic trailing zero byte,
  *                       into consecutive addresses.
+ *                 12) .print <string>
+ *                     - Assambler will print string
+ *                       on the standard output during assembly.
+ *                 13) .err
+ *                     - If as assembles a .err directive,
+ *                       it will print an error message and,
+ *                       it will not generate an object file.
+ *                     - It prints ".error directive invoked in source file".
+ *                 14) .error <string>
+ *                     - Similarly to .err, this directive emits an error,
+ *                       but you can specify a string
+ *                       that will be emitted as the error message.
+ *                     - If you don't specify the message, it defaults to
+ *                       ".error directive invoked in source file".
+ *                 15) .warning <string>
+ *                     - Similar to the directive .error,
+ *                       but just emits a warning. 
  */
 struct Directive {
     /**

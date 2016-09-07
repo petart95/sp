@@ -125,3 +125,11 @@ std::string repeatNTimes(const std::string& s, int n) {
     return res;
 }
 
+std::string removeCharacterSetFromString(std::string str, std::string charsToRemove) {
+   for (int i = 0; i < charsToRemove.length(); i++) {
+      str.erase(remove(str.begin(), str.end(), charsToRemove[i]), str.end());
+   }
+
+   return str;
+}
+
