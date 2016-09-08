@@ -8,30 +8,9 @@
 
 #include "Operation.hpp"
 #include "CreateMap.hpp"
+#include "CreateVector.h"
 #include "ProcessString.h"
 #include "Log.h"
-
-std::map<std::string, std::string> Operation::operandTypeForOpcode = createMap<std::string, std::string>
-    ("int",  "R_386_4")
-    ("add",  "R_386_4+PC+LR+SP,R_386_4+PC+LR+SP|R_386_18S")
-    ("sub",  "R_386_4+PC+LR+SP,R_386_4+PC+LR+SP|R_386_18S")
-    ("mul",  "R_386_4,R_386_4|R_386_18S")
-    ("div",  "R_386_4,R_386_4|R_386_18S")
-    ("cmp",  "R_386_4,R_386_4|R_386_18S")
-    ("and",  "R_386_4+SP,R_386_4+SP")
-    ("or",   "R_386_4+SP,R_386_4+SP")
-    ("not",  "R_386_4+SP,R_386_4+SP")
-    ("test", "R_386_4+SP,R_386_4+SP")
-    ("ldr",  "R_386_4+PC+LR+SP+PSW,R_386_4+PC+LR+SP+PSW,R_386_3,R_386_PC10S")
-    ("str",  "R_386_4+PC+LR+SP+PSW,R_386_4+PC+LR+SP+PSW,R_386_3,R_386_PC10S")
-    ("call", "R_386_4+PC+LR+SP+PSW,R_386_PC19S")
-    ("in",   "R_386_4,R_386_4")
-    ("out",  "R_386_4,R_386_4")
-    ("mov",  "R_386_4+PC+LR+SP+PSW,R_386_4+PC+LR+SP+PSW")
-    ("shr",  "R_386_4+PC+LR+SP+PSW,R_386_4+PC+LR+SP+PSW,R_386_5")
-    ("shl",  "R_386_4+PC+LR+SP+PSW,R_386_4+PC+LR+SP+PSW,R_386_5")
-    ("ldch", "R_386_4,R_386_16")
-    ("ldcl", "R_386_4,R_386_16");
 
 Operation::Operation(std::vector<std::string> operation)
     : opcode(operation[0]), 
@@ -94,3 +73,53 @@ std::string Operation::createHexRepresentation(){
 bool Operation::isOperationValid() {
     return opcode.isValid && operands.areValid;
 }
+
+std::map<std::string, std::vector<std::string>> Operation::operandTypeForOpcode =
+    createMap<std::string, std::vector<std::string>>
+    ("int",  createVector<std::string>
+             ("ABSEXP_4,NUSED_20"))
+    ("add",  createVector<std::string>
+             ("REG+PC+LR+SP,CONST_0,REG+PC+LR+SP,NUSED_13")
+             ("REG+PC+LR+SP,CONST_1,ABSEXP_18_SIGNEXT"))
+    ("sub",  createVector<std::string>
+             ("REG+PC+LR+SP,CONST_0,REG+PC+LR+SP,NUSED_13")
+             ("REG+PC+LR+SP,CONST_1,ABSEXP_18_SIGNEXT"))
+    ("mul",  createVector<std::string>
+             ("CONST_0,REG,CONST_0,CONST_0,REG,NUSED_13")
+             ("CONST_0,REG,CONST_1,ABSEXP_18_SIGNEXT"))
+    ("div",  createVector<std::string>
+             ("CONST_0,REG,CONST_0,CONST_0,REG,NUSED_13")
+             ("CONST_0,REG,CONST_1,ABSEXP_18_SIGNEXT"))
+    ("cmp",  createVector<std::string>
+             ("CONST_0,REG,CONST_0,CONST_0,REG,NUSED_13")
+             ("CONST_0,REG,CONST_1,ABSEXP_18_SIGNEXT"))
+    ("and",  createVector<std::string>
+             ("REG+SP,REG+SP,NUSED_14"))
+    ("or",   createVector<std::string>
+             ("RGE+SP,REG+SP,NUSED_14"))
+    ("not",  createVector<std::string>
+             ("REG+SP,REG+SP,NUSED_14"))
+    ("test", createVector<std::string>
+             ("REG+SP,REG+SP,NUSED_14"))
+    ("ldr",  createVector<std::string>
+             ("REG+PC+LR+SP+PSW,REG+PC+LR+SP+PSW,ABSEXP_3,CONST_1,ABSEXP_10_SIGNEXT"))
+    ("str",  createVector<std::string>
+             ("REG+PC+LR+SP+PSW,REG+PC+LR+SP+PSW,ABSEXP_3,CONST_0,ABSEXP_10_SIGNEXT"))
+    ("call", createVector<std::string>
+             ("REG+PC+LR+SP+PSW,ABSEXP_19_SIGNEXT")
+             ("ABSEXP_24"))
+    ("in",   createVector<std::string>
+             ("REG,REG,CONST_1,NUSED_15"))
+    ("out",  createVector<std::string>
+             ("REG,REG,CONST_0,NUSED_15"))
+    ("mov",  createVector<std::string>
+             ("REG+PC+LR+SP+PSW,REG+PC+LR+SP+PSW,NUSED_14"))
+    ("shr",  createVector<std::string>
+             ("REG+PC+LR+SP+PSW,REG+PC+LR+SP+PSW,ABSEXP_5,CONST_0,NUSED_8"))
+    ("shl",  createVector<std::string>
+             ("REG+PC+LR+SP+PSW,REG+PC+LR+SP+PSW,ABSEXP_5,CONST_1,NUSED_8"))
+    ("ldch", createVector<std::string>
+             ("REG,CONST_1,NUSED_3,R_386_16"))
+    ("ldcl", createVector<std::string>
+             ("REG,CONST_0,NUSED_3,R_386_16"));
+
