@@ -44,18 +44,18 @@ struct Operation {
     };
     
     struct Operands {
-        std::vector<std::string> value;
+        std::vector<std::string> operands;
         std::vector<std::string> type;
         
         int areValid;
         
         Operand parseOperandWithType(std::string value, std::string type);
         
-        Operands(std::vector<std::string> _value, std::string _type);
+        Operands(std::vector<std::string> _operands, std::string _type);
         
-        long long createHexRepresentation();
+        std::string createHexRepresentation();
         
-        Operand getOperandAtIndex(int index);
+        int registerHexRepresentation(std::string operand);
     };
     
     Opcode opcode;

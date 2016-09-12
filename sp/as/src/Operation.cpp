@@ -11,70 +11,41 @@
 #include "CreateVector.h"
 #include "ProcessString.h"
 #include "Log.h"
+#include "Error.h"
 
-Operation::Operation(std::vector<std::string> operation)
-    : opcode(operation[0]), 
-      operands(std::vector<std::string>(operation.begin() + 1, operation.end()),
-                                        operandTypeForOpcode[opcode.name]) {
+#define ERROR_PREFIX "Invalid operation: "
+
+Operation::Operation(std::vector<std::string> operation) : opcode(operation[0]) {
+    std::vector<std::string> _operands(operation.begin() + 1, operation.end());
+          
+    std::map<std::string, std::vector<std::string>>::iterator it_type iterator;
+          
+    for(iterator = supportedOperations.begin(); iterator != supportedOperations.end(); iterator++) {
+        if(iterator->first == opcode.name) {
+            operands = Operands(_operands, iterator->second);
+            
+            if(operands.areValid) {
+                break;
+            }
+        }
+    }
+    
+    if(!operands) {
+        ERROR(BOLD("operation for opcode '" , BOLD(operation[0]), "' was not found"));
+    } else if(!operands.areValid) {
+        ERROR(" operands layout for operation '", BOLD(operation[0]), "' is unsupported");
+    }
 }
 
 std::string Operation::createHexRepresentation(){
-    std::string hexString;
-
-    if(opcode.name.compare("int") == 0) {
-        hexString = opcode.createHexRepresentation() + toHexadecimal(operands.createHexRepresentation()<<20, 6);
-    } else if(opcode.name.compare("add") == 0 ||
-              opcode.name.compare("sub") == 0 ||
-              opcode.name.compare("mul") == 0 ||
-              opcode.name.compare("div") == 0 ||
-              opcode.name.compare("cmp") == 0) {
-	long long constant = 0; 
-        if(operands.getOperandAtIndex(1).type.compare("R_386_18S") == 0) {
-            constant = 1;
-        }
-        long long operandsCode = (operands.getOperandAtIndex(0).value<<19) + (constant<<18) + operands.getOperandAtIndex(1).value;
-        hexString = opcode.createHexRepresentation() + toHexadecimal(operandsCode, 6);
-    } else if(opcode.name.compare("and") == 0 ||
-              opcode.name.compare("or") == 0 ||
-              opcode.name.compare("not") == 0 ||
-              opcode.name.compare("test") == 0) {
-        hexString = opcode.createHexRepresentation() + toHexadecimal(operands.createHexRepresentation()<<14, 6);
-    } else if(opcode.name.compare("ldr") == 0) {
-        long long operandsCode = (operands.getOperandAtIndex(0).value<<19) + (operands.getOperandAtIndex(1).value<<14) +
-                                 (operands.getOperandAtIndex(2).value<<11) + (1<<10) +  operands.getOperandAtIndex(3).value;
-        hexString = opcode.createHexRepresentation() + toHexadecimal(operandsCode, 6);
-    } else if(opcode.name.compare("str") == 0) {
-        long long operandsCode = (operands.getOperandAtIndex(0).value<<19) + (operands.getOperandAtIndex(1).value<<14) +
-                                 (operands.getOperandAtIndex(2).value<<11) + (0<<10) +  operands.getOperandAtIndex(3).value;
-        hexString = opcode.createHexRepresentation() + toHexadecimal(operandsCode, 6);
-    } else if(opcode.name.compare("call") == 0) {
-        hexString = opcode.createHexRepresentation() + toHexadecimal(operands.createHexRepresentation(), 6);
-    } else if(opcode.name.compare("in") == 0) {
-        hexString = opcode.createHexRepresentation() + toHexadecimal((operands.createHexRepresentation()<<16) + (1<<15), 6);
-    } else if(opcode.name.compare("out") == 0) {
-        hexString = opcode.createHexRepresentation() + toHexadecimal((operands.createHexRepresentation()<<16) + (0<<15), 6);
-    } else if(opcode.name.compare("mov") == 0) {
-        hexString = opcode.createHexRepresentation() + toHexadecimal((operands.createHexRepresentation()<<14), 6);
-    } else if(opcode.name.compare("shr") == 0) {
-        hexString = opcode.createHexRepresentation() + toHexadecimal((operands.createHexRepresentation()<<9) + (0<<8), 6);
-    } else if(opcode.name.compare("shl") == 0) {
-        hexString = opcode.createHexRepresentation() + toHexadecimal((operands.createHexRepresentation()<<9) + (1<<8), 6);
-    } else if(opcode.name.compare("ldch") == 0) {
-        long long operandsCode = (operands.getOperandAtIndex(0).value<<20) + (1<<19) + (0<<16) + operands.getOperandAtIndex(1).value;
-        hexString = opcode.createHexRepresentation() + toHexadecimal(operandsCode, 6);
-    } else if(opcode.name.compare("ldcl") == 0) {
-        long long operandsCode = (operands.getOperandAtIndex(0).value<<20) + (0<<19) + (0<<16) + operands.getOperandAtIndex(1).value;
-        hexString = opcode.createHexRepresentation() + toHexadecimal(operandsCode, 6);
-    }
-
-    return hexString;
+    return opcode.createHexRepresentation() + operands.createHexRepresentation();
 };
 
 bool Operation::isOperationValid() {
     return opcode.isValid && operands.areValid;
 }
 
-std::map<std::string, std::vector<std::string>> Operation::operandTypeForOpcode =
+std::map<std::string, std::vector<std::string>> Operation::supportedOperations =
     createMap<std::string, std::vector<std::string>>
     ("int",  createVector<std::string>
              ("ABSEXP_4,NUSED_20"))
@@ -119,7 +90,7 @@ std::map<std::string, std::vector<std::string>> Operation::operandTypeForOpcode 
     ("shl",  createVector<std::string>
              ("REG+PC+LR+SP+PSW,REG+PC+LR+SP+PSW,ABSEXP_5,CONST_1,NUSED_8"))
     ("ldch", createVector<std::string>
-             ("REG,CONST_1,NUSED_3,R_386_16"))
+             ("REG,CONST_1,NUSED_3,ABSEXP_16"))
     ("ldcl", createVector<std::string>
-             ("REG,CONST_0,NUSED_3,R_386_16"));
+             ("REG,CONST_0,NUSED_3,ABSEXP_16"));
 
