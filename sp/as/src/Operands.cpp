@@ -63,12 +63,17 @@ std::string Operation::Operands::createHexRepresentation() {
             shift = contains(type[typeIndex], "+") ? 5 : 4;
             value = registerIndex(operands[operandsIndex++]);
         } else if(TYPE_ABSOLUT_EXPRESION(type[typeIndex])) {
-            shift = toIntager(type[typeIndex].substr(type[typeIndex].find("_"), type[typeIndex].find_last_of("_")));
+            std::string size = type[typeIndex].substr(type[typeIndex].find("_") + 1);
+            size = size.substr(0, size.find("_"));
+            
+            shift = toIntager(size);
             Argument exp = expresion(operands[operandsIndex++]);
 
             // TODO SIGNEXT
 
             value = exp.value;
+            
+            LOG("creating hex rep ", type[typeIndex], " ", size, " ", shift, " ", offset);
             
             Section::addRealocationOfSizeAtOffset(exp, shift, offset);
         }

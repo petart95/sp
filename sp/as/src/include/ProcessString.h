@@ -45,4 +45,6 @@ std::string repeatNTimes(const std::string& s, int n);
 
 std::string removeCharacterSetFromString(std::string str, std::string charsToRemove);
 
+std::string insertCharEveryNthCharacterOfString(char c, int n, const std::string& s);
+
 #endif /* PROCESS_STRING_H_ */

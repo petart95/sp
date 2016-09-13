@@ -84,7 +84,7 @@ std::istream & operator >> (std::istream &in, Section &section) {
 std::ostream & operator << (std::ostream &out, const Section &section) {
     // Output section
     out << "# " << section.name << "\n";
-    out << section.data << "\n" << "\n";
+    out << insertCharEveryNthCharacterOfString(' ', 2, section.data) << "\n" << "\n";
     
     // Output section realocation tabel
     out << "# .ret" << section.name << "\n";

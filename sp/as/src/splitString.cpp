@@ -133,3 +133,19 @@ std::string removeCharacterSetFromString(std::string str, std::string charsToRem
    return str;
 }
 
+std::string insertCharEveryNthCharacterOfString(char c, int n, const std::string& s) {
+    if (!s.size()) {
+        return "";
+    }
+    
+    std::stringstream ss;
+    ss << s[0];
+    for (int i = 1; i < s.size(); i++) {
+        if (i%n == 0) {
+            ss << c;
+        }
+        ss << s[i];
+    }
+    
+    return ss.str();
+}

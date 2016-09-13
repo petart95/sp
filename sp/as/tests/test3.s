@@ -18,7 +18,7 @@ start: 	sub r1,r2
 	sub r2,r3
 	add r2, buffer
 	sub r3,r3
-	//call r3, printf
+	call r3, printf
 e:	.long e
 end:	.long d
 	.end
