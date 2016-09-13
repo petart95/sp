@@ -18,31 +18,18 @@
 Operation::Operation(std::vector<std::string> operation) : opcode(operation[0]) {
     std::vector<std::string> _operands(operation.begin() + 1, operation.end());
           
-    std::map<std::string, std::vector<std::string> >::iterator iterator;
-          
-    for(iterator = validLayouts.begin(); iterator != validLayouts.end(); iterator++) {
-        if(iterator->first == opcode.name) {
-            operands = Operands(_operands, iterator->second);
-            
-            if(operands.areValid) {
-                break;
-            }
-        }
+    for(int i = 0; i < validLayouts[opcode.name].size() && !operands.areValid; i++) {
+        operands = Operands(_operands, validLayouts[opcode.name][i]);
     }
     
     if(!operands.areValid) {
-        ERROR("operands layout for operation '",
-              BOLD(operation[0]), "' is unsupported");
+        ERROR("operands layout for operation '", BOLD(operation[0]), "' is unsupported");
     }
 }
 
 std::string Operation::createHexRepresentation(){
     return opcode.createHexRepresentation() + operands.createHexRepresentation();
 };
-
-bool Operation::isOperationValid() {
-    return opcode.isValid && operands.areValid;
-}
 
 std::map<std::string, std::vector<std::string> > Operation::validLayouts =
     createMap<std::string, std::vector<std::string> >
@@ -92,4 +79,3 @@ std::map<std::string, std::vector<std::string> > Operation::validLayouts =
              ("REG,CONST_1,NUSED_3,ABSEXP_16"))
     ("ldcl", createVector<std::string>
              ("REG,CONST_0,NUSED_3,ABSEXP_16"));
-

@@ -16,7 +16,7 @@
 #define FLAG_OFFSET 4
 #define CONDITION_OFFSET 5
 
-Operation::Opcode::Opcode(std::string opcode) : isValid(true) {
+Operation::Opcode::Opcode(std::string opcode) {
     std::vector<std::string> opcodeParts =
         splitStringWhitCharacterSet(opcode, "-");
     

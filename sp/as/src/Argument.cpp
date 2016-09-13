@@ -4,9 +4,18 @@
 
 #define ERROR_PREFIX "Invalid operation: "
 
+Argument::Argument(Simbol simbol) : value(simbol.offset), simbolID(simbol.id) {
+    if(simbol.isDefined){
+        simbolID = Simbol::withSectionID(simbol.sectionID);
+    }
+}
+
+bool Argument::isRelativ() const {
+    return simbolID != -1;
+}
+
 Argument Argument::updateForNegation() {
-    simbolID = -1;
-    if(isRelativ) {
+    if(isRelativ()) {
         ERROR("'", BOLD("-"), "' can't be done on relativ argument");
     }
 
@@ -15,8 +24,7 @@ Argument Argument::updateForNegation() {
     return *this;
 }
 Argument Argument::updateForComplementation() {
-    simbolID = -1;
-    if(isRelativ) {
+    if(isRelativ()) {
         ERROR("'", BOLD("~"), "' can't be done on relativ argument");
     }
 
@@ -26,8 +34,7 @@ Argument Argument::updateForComplementation() {
 }
 
 Argument& Argument::operator*=(const Argument& rhs){
-    simbolID = -1;
-    if(rhs.isRelativ || isRelativ) {
+    if(rhs.isRelativ() || isRelativ()) {
         ERROR("'", BOLD("*"), "' can't be used between relativ arguments");
     }
 
@@ -36,8 +43,7 @@ Argument& Argument::operator*=(const Argument& rhs){
     return *this;
 }
 Argument& Argument::operator/=(const Argument& rhs){
-    simbolID = -1;
-    if(rhs.isRelativ || isRelativ) {
+    if(rhs.isRelativ() || isRelativ()) {
         ERROR("'", BOLD("/"), "' can't be used between relativ arguments");
     }
 
@@ -46,8 +52,7 @@ Argument& Argument::operator/=(const Argument& rhs){
     return *this;
 }
 Argument& Argument::operator%=(const Argument& rhs){
-    simbolID = -1;
-    if(rhs.isRelativ || isRelativ) {
+    if(rhs.isRelativ() || isRelativ()) {
         ERROR("'", BOLD("%"), "' can't be used between relativ arguments");
     }
 
@@ -56,8 +61,7 @@ Argument& Argument::operator%=(const Argument& rhs){
     return *this;
 }
 Argument& Argument::operator>>=(const Argument& rhs){
-    simbolID = -1;
-    if(rhs.isRelativ || isRelativ) {
+    if(rhs.isRelativ() || isRelativ()) {
         ERROR("'", BOLD(">>"), "' can't be used between relativ arguments");
     }
 
@@ -66,8 +70,7 @@ Argument& Argument::operator>>=(const Argument& rhs){
     return *this;
 }
 Argument& Argument::operator<<=(const Argument& rhs){
-    simbolID = -1;
-    if(rhs.isRelativ || isRelativ) {
+    if(rhs.isRelativ() || isRelativ()) {
         ERROR("'", BOLD("<<"), "' can't be used between relativ arguments");
     }
 
@@ -77,8 +80,7 @@ Argument& Argument::operator<<=(const Argument& rhs){
 }
 
 Argument& Argument::operator|=(const Argument& rhs){
-    simbolID = -1;
-    if(rhs.isRelativ || isRelativ) {
+    if(rhs.isRelativ() || isRelativ()) {
         ERROR("'", BOLD("|"), "' can't be used between relativ arguments");
     }
 
@@ -87,8 +89,7 @@ Argument& Argument::operator|=(const Argument& rhs){
     return *this;
 }
 Argument& Argument::operator&=(const Argument& rhs){
-    simbolID = -1;
-    if(rhs.isRelativ || isRelativ) {
+    if(rhs.isRelativ() || isRelativ()) {
         ERROR("'", BOLD("&"), "' can't be used between relativ arguments");
     }
 
@@ -97,8 +98,7 @@ Argument& Argument::operator&=(const Argument& rhs){
     return *this;
 }
 Argument& Argument::operator^=(const Argument& rhs){
-    simbolID = -1;
-    if(rhs.isRelativ || isRelativ) {
+    if(rhs.isRelativ() || isRelativ()) {
         ERROR("'", BOLD("^"), "' can't be used between relativ arguments");
     }
 
@@ -108,29 +108,26 @@ Argument& Argument::operator^=(const Argument& rhs){
 }
 
 Argument& Argument::operator+=(const Argument& rhs){
-    simbolID = -1;
-    if(rhs.isRelativ && isRelativ) {
+    if(rhs.isRelativ() && isRelativ()) {
         ERROR("'", BOLD("+"), "' can't be used between relativ arguments");
-    } else if(rhs.isRelativ && !isRelativ) {
-        isRelativ = true;
-        sectionID = rhs.sectionID;
+    } else if(rhs.isRelativ()) {
+        simbolID = rhs.simbolID;
     }
-
+    
     value += rhs.value;
 
     return *this;
 }
 Argument& Argument::operator-=(const Argument& rhs){
-    simbolID = -1;
-    if((rhs.isRelativ && isRelativ) && sectionID != rhs.sectionID) {
-        ERROR("'", BOLD("-"), "' can't be used between relativ arguments,",
-              "if not from same section");
-    } else if((rhs.isRelativ && isRelativ) && sectionID == rhs.sectionID) {
-        isRelativ = false;
-        sectionID = -1;
-    } else if(rhs.isRelativ && !isRelativ) {
-        isRelativ = true;
-        sectionID = rhs.sectionID;
+    if(rhs.isRelativ() && isRelativ()) {
+        if(Simbol::withSectionID(simbolID) != Simbol::withSectionID(rhs.simbolID)) {
+            ERROR("'", BOLD("-"), "' can't be used between relativ arguments,",
+                  "if not from same section");
+        } else {
+            simbolID = -1;
+        }
+    } else if(rhs.isRelativ()) {
+        simbolID = rhs.simbolID;
     }
 
     value -= rhs.value;
@@ -181,8 +178,7 @@ inline Argument operator-(Argument lhs, const Argument& rhs) {
 }
 
 Argument operator==(Argument lhs, const Argument& rhs) {
-    lhs.simbolID = -1;
-    if(rhs.isRelativ || lhs.isRelativ) {
+    if(rhs.isRelativ() || lhs.isRelativ()) {
         ERROR("'", BOLD("=="), "' can't be used between relativ arguments");
     }
 
@@ -191,8 +187,7 @@ Argument operator==(Argument lhs, const Argument& rhs) {
     return lhs;
 }
 Argument operator!=(Argument lhs, const Argument& rhs) {
-    lhs.simbolID = -1;
-    if(rhs.isRelativ || lhs.isRelativ) {
+    if(rhs.isRelativ() || lhs.isRelativ()) {
         ERROR("'", BOLD("!="), "' can't be used between relativ arguments");
     }
 
@@ -201,8 +196,7 @@ Argument operator!=(Argument lhs, const Argument& rhs) {
     return lhs;
 }
 Argument operator>(Argument lhs, const Argument& rhs) {
-    lhs.simbolID = -1;
-    if(rhs.isRelativ || lhs.isRelativ) {
+    if(rhs.isRelativ() || lhs.isRelativ()) {
         ERROR("'", BOLD(">"), "' can't be used between relativ arguments");
     }
 
@@ -211,8 +205,7 @@ Argument operator>(Argument lhs, const Argument& rhs) {
     return lhs;
 }
 Argument operator<(Argument lhs, const Argument& rhs) {
-    lhs.simbolID = -1;
-    if(rhs.isRelativ || lhs.isRelativ) {
+    if(rhs.isRelativ() || lhs.isRelativ()) {
         ERROR("'", BOLD("<"), "' can't be used between relativ arguments");
     }
 
@@ -221,8 +214,7 @@ Argument operator<(Argument lhs, const Argument& rhs) {
     return lhs;
 }
 Argument operator>=(Argument lhs, const Argument& rhs) {
-    lhs.simbolID = -1;
-    if(rhs.isRelativ || lhs.isRelativ) {
+    if(rhs.isRelativ() || lhs.isRelativ()) {
         ERROR("'", BOLD(">="), "' can't be used between relativ arguments");
     }
 
@@ -231,8 +223,7 @@ Argument operator>=(Argument lhs, const Argument& rhs) {
     return lhs;
 }
 Argument operator<=(Argument lhs, const Argument& rhs) {
-    lhs.simbolID = -1;
-    if(rhs.isRelativ || lhs.isRelativ) {
+    if(rhs.isRelativ() || lhs.isRelativ()) {
         ERROR("'", BOLD("<="), "' can't be used between relativ arguments");
     }
 
@@ -242,8 +233,7 @@ Argument operator<=(Argument lhs, const Argument& rhs) {
 }
 
 Argument operator||(Argument lhs, const Argument& rhs) {
-    lhs.simbolID = -1;
-    if(rhs.isRelativ || lhs.isRelativ) {
+    if(rhs.isRelativ() || lhs.isRelativ()) {
         ERROR("'", BOLD("||"), "' can't be used between relativ arguments");
     }
 
@@ -252,48 +242,11 @@ Argument operator||(Argument lhs, const Argument& rhs) {
     return lhs;
 }
 Argument operator&&(Argument lhs, const Argument& rhs) {
-    lhs.simbolID = -1;
-    if(rhs.isRelativ || lhs.isRelativ) {
+    if(rhs.isRelativ() || lhs.isRelativ()) {
         ERROR("'", BOLD("&&"), "' can't be used between relativ arguments");
     }
 
     lhs.value = lhs.value && rhs.value;
 
     return lhs;
-}
-
-void Argument::addRealocatioDataForType(std::string type) {
-    if(simbolID != -1 && !Simbol::tabel[simbolID].isDefined) {
-        std::stringstream realocationStream;
-
-        realocationStream << "  ";
-        realocationStream << std::left << std::setw(9) << std::setfill(' ')
-                          << toHexadecimal(Section::tabel[Section::current].locationCounter, 8);
-        realocationStream << std::left << std::setw(20) << std::setfill(' ') << type;
-        realocationStream << std::left << std::setw(4) << std::setfill(' ') << simbolID;
-        realocationStream << "\n";
-
-        if(Section::tabel[Section::current].realocation.find(realocationStream.str()) == std::string::npos) {
-            Section::tabel[Section::current].realocation += realocationStream.str();
-        }
-    } else if(isRelativ) {
-        for(int i = 0; i < Simbol::tabel.size(); i++) {
-            if(Section::tabel[Section::current].name.compare(Simbol::tabel[i].name) == 0) {
-                simbolID = i;
-            }
-        }
-
-        std::stringstream realocationStream;
-
-        realocationStream << "  ";
-        realocationStream << std::left << std::setw(9) << std::setfill(' ')
-                          << toHexadecimal(Section::tabel[Section::current].locationCounter, 8);
-        realocationStream << std::left << std::setw(20) << std::setfill(' ') << type;
-        realocationStream << std::left << std::setw(4) << std::setfill(' ') << simbolID;
-        realocationStream << "\n";
-
-        if(Section::tabel[Section::current].realocation.find(realocationStream.str()) == std::string::npos) {
-            Section::tabel[Section::current].realocation += realocationStream.str();
-        }
-    }
 }

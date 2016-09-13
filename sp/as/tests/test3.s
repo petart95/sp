@@ -11,11 +11,11 @@ drugi:	.skip 55
 a:	.long (hptr-tptr+4)<<2
 	.extern printf,d
 	.text.prvi
-start: 	sub r1,r1
+start: 	sub r1,r2
 	.warning WARNING
 	.print "fdsf"
 	add r1,1<<4
-	sub r2,r2
+	sub r2,r3
 	add r2, buffer
 	sub r3,r3
 	//call r3, printf

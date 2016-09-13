@@ -10,7 +10,7 @@
 
 void externDirectivFunctionForFirstPass(std::vector<std::string> directiv) {
     for(int i = 1; i < directiv.size(); i++) {
-        Simbol(directiv[i], -1, -1, false, true);
+        Simbol(directiv[i], 0, -1, false, true);
     }
 }
 
@@ -30,11 +30,11 @@ void alignDirectivFunctionForFirstPass(std::vector<std::string> directiv) {
     int alignAmount = directiv.size() > 1 ? expresion(directiv[1]).value : ALIGN_AMOUNT;
     int max = directiv.size() > 3 ? expresion(directiv[3]).value : MAX_ALIGN_AMOUNT;
 
-    if(directiv.size() > 1 && expresion(directiv[1]).isRelativ) {
+    if(directiv.size() > 1 && expresion(directiv[1]).isRelativ()) {
         ERROR("first argument '", BOLD(directiv[1]), "' must be absolut");
-    } else if(directiv.size() > 2 && expresion(directiv[2]).isRelativ) {
+    } else if(directiv.size() > 2 && expresion(directiv[2]).isRelativ()) {
         ERROR("second argument '", BOLD(directiv[2]), "' must be absolut");
-    } else if(directiv.size() > 3 && expresion(directiv[3]).isRelativ) {
+    } else if(directiv.size() > 3 && expresion(directiv[3]).isRelativ()) {
         ERROR("third argument '", BOLD(directiv[3]), "' must be absolut");
     }
 
@@ -45,9 +45,9 @@ void alignDirectivFunctionForFirstPass(std::vector<std::string> directiv) {
 }
 
 void skipDirectivFunctionForFirstPass(std::vector<std::string> directiv) {
-    if(directiv.size() > 1 && expresion(directiv[1]).isRelativ) {
+    if(directiv.size() > 1 && expresion(directiv[1]).isRelativ()) {
         ERROR("first argument '", BOLD(directiv[1]), "' must be absolut");
-    } else if(directiv.size() > 2 && expresion(directiv[2]).isRelativ) {
+    } else if(directiv.size() > 2 && expresion(directiv[2]).isRelativ()) {
         ERROR("second argument '", BOLD(directiv[2]), "' must be absolut");
     }
 
@@ -75,10 +75,14 @@ void setDirectivFunctionForFirstPass(std::vector<std::string> directiv) {
     if(directiv.size() != 3) {
         ERROR("'", BOLD(directiv[0]), "' must have two arguments");
     }
-
+    
     Argument exp = expresion(directiv[2]);
-
-    Simbol(directiv[1], exp.value, exp.sectionID, true, false, true);
+    
+    if(exp.isRelativ()) {
+        Simbol(directiv[1], exp.value, Simbol::tabel[exp.simbolID].sectionID, true, false, true);
+    } else {
+        Simbol(directiv[1], exp.value, -1, true, false, true);
+    }
 }
 
 std::map<std::string, DirectiveFunctionPointer> Directive::functionForFirstPass =

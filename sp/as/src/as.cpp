@@ -67,7 +67,7 @@ void init(int argc, char** argv) {
 void initForSeconPass() {
     // Return to the begining of the file
     in.clear();
-    in.seekg (0, std::ios::beg);
+    in.seekg(0, std::ios::beg);
     
     // Initalize data for second pass
     Directive::endFound = false;
@@ -182,14 +182,6 @@ void processLineSecondPass(std::string line) {
         (*Directive::functionForSecondPass[split[0]])(split);
     } else {
         Operation operation(split);
-        
-        if(!operation.opcode.isValid) {
-            ERROR("Opcode for operation: '", line, "' is invalid");
-        }
-
-        if(!operation.operands.areValid){
-            ERROR("Operands for operationl: ' " , line, "' are invalid");
-        }
 
         // Fill in section data.
         Section::fill(operation.createHexRepresentation());

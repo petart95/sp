@@ -14,7 +14,7 @@
 (toString(_0) + toString(_1) + toString(_2) + toString(_3) + toString(_4) + \
  toString(_5) + toString(_6) + toString(_7) + toString(_8) + toString(_9))
 
-#define LOG(...) log(CONCATENATE_STRINGS("", __VA_ARGS__, "", "", "", "", "", "", "", "", ""))
+#define LOG(...) log(CONCATENATE_STRINGS(BOLD(currentDateTime() + YEL(" LOG: ")), __VA_ARGS__, "", "", "", "", "", "", "", "", ""))
 
 #define LOGG
 
@@ -34,6 +34,8 @@ extern volatile bool logging;
 void vlog(const char* format, va_list &arglist);
 
 #endif
+
+const std::string currentDateTime();
 
 inline void initLog() {
 	#ifdef LOGFILE

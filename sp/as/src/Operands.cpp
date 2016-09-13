@@ -14,8 +14,9 @@
 
 #include "Expresion.h"
 #include "Argument.h"
+#include "Section.h"
 
-#define OPERANDS_LENGTH 24
+#define OPERANDS_LENGTH 6
 
 #define TYPE_CONSTANT(type) (contains((type), "CONST"))
 #define TYPE_REGISTER(type) (contains((type), "REG"))
@@ -25,19 +26,21 @@
 Operation::Operands::Operands(std::vector<std::string> _operands, std::string _type)
     : operands(_operands), type(splitStringWhitCharacterSet(_type, ",")) {
     int typeIndex = 0, operandsIndex = 0;
-    for(; typeIndex < type.size() && operandsIndex < operands.size();
-        typeIndex++, operandsIndex++) {
-        while(TYPE_CONSTANT(type[typeIndex]) || TYPE_NOT_USED(type[typeIndex])) {
+    for(; typeIndex < type.size() && operandsIndex < operands.size(); typeIndex++, operandsIndex++) {
+        while(typeIndex < type.size() && (TYPE_CONSTANT(type[typeIndex]) || TYPE_NOT_USED(type[typeIndex]))) {
             typeIndex++;
         }
         
-        if (TYPE_REGISTER(type[typeIndex]) &&
-            (registerHexRepresentation(operands[operandsIndex]) != -1 ||
-            !contains(type[typeIndex], toUpper(operands[operandsIndex])))) {
+        if (typeIndex < type.size() && TYPE_REGISTER(type[typeIndex]) &&
+            registerIndex(operands[operandsIndex], type[typeIndex]) == -1) {
             break;
         }
     }
     
+    while(typeIndex < type.size() && (TYPE_CONSTANT(type[typeIndex]) || TYPE_NOT_USED(type[typeIndex]))) {
+        typeIndex++;
+    }
+        
     areValid = operandsIndex == operands.size() && typeIndex == type.size();     
 }
 
@@ -47,8 +50,9 @@ std::string Operation::Operands::createHexRepresentation() {
               "Can't create hex representation for invalid operands");
     }
 
-    long long operandsCode = 0, operandsIndex = 0, typeIndex;
-    for(typeIndex = 0; typeIndex < type.size(); typeIndex++) {
+    long long operandsCode = 0, offset = 8;
+    
+    for(int typeIndex = 0, operandsIndex = 0; typeIndex < type.size(); typeIndex++) {
         int shift = 1, value = 0;
         
         if(TYPE_CONSTANT(type[typeIndex])) {
@@ -57,7 +61,7 @@ std::string Operation::Operands::createHexRepresentation() {
             shift = toIntager(type[typeIndex].substr(type[typeIndex].find("_")));
         } else if(TYPE_REGISTER(type[typeIndex])) {
             shift = contains(type[typeIndex], "+") ? 5 : 4;
-            value = registerHexRepresentation(operands[operandsIndex++]);
+            value = registerIndex(operands[operandsIndex++]);
         } else if(TYPE_ABSOLUT_EXPRESION(type[typeIndex])) {
             shift = toIntager(type[typeIndex].substr(type[typeIndex].find("_"), type[typeIndex].find_last_of("_")));
             Argument exp = expresion(operands[operandsIndex++]);
@@ -66,20 +70,20 @@ std::string Operation::Operands::createHexRepresentation() {
 
             value = exp.value;
             
-            // TODO add realocation data
-            exp.addRealocatioDataForType(type[typeIndex]);
+            Section::addRealocationOfSizeAtOffset(exp, shift, offset);
         }
         
         operandsCode <<= shift;
         operandsCode += value;
+        offset += shift;
     }
 
     return toHexadecimal(operandsCode, OPERANDS_LENGTH);
 }
 
-int Operation::Operands::registerHexRepresentation(std::string operand) {
-    if((operand[0] == 'R' || operand[0] == 'r') && isIntager(operand.substr(1))) {
-        int regIndex = toIntager(operand.substr(1));
+int Operation::Operands::registerIndex(std::string reg, std::string supportedRegisters) {
+    if((reg[0] == 'R' || reg[0] == 'r') && isIntager(reg.substr(1))) {
+        int regIndex = toIntager(reg.substr(1));
         
         if(0 > regIndex || regIndex >= 16) {
             return -1;
@@ -92,10 +96,10 @@ int Operation::Operands::registerHexRepresentation(std::string operand) {
         createMap<std::string, int>
         ("PC", 16)("LR", 17)("SP", 18)("PSW", 19);
     
-    if(!contains(registers, toUpper(operand))) {
+    if(!contains(supportedRegisters, toUpper(reg)) ) {
         return -1;
     }
     
-    return registers[toUpper(operand)];
+    return registers[toUpper(reg)];
 }
 

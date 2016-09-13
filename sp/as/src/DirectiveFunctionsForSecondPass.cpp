@@ -15,13 +15,11 @@ std::string createFillData(std::vector<std::string> arguments, int size) {
     std::string fill = "";
     
     for(int i = 1; i < argumentsSize; i++) {
-        Argument expresionEvaluated = expresion(arguments[i]);
+        Argument exp = expresion(arguments[i]);
         
-        int result = expresionEvaluated.value;
+        Section::addRealocationOfSizeAtOffset(exp, 8*size);
         
-        expresionEvaluated.addRealocatioDataForType("R_386_" + toString(2*size));
-        
-        fill += toHexadecimal(result, size);
+        fill += toHexadecimal(exp.value, 2*size);
     }
     
     return fill;
@@ -94,7 +92,11 @@ void setDirectivFunctionForSecondPass(std::vector<std::string> directiv) {
 
     Argument exp = expresion(directiv[2]);
 
-    Simbol(directiv[1], exp.value, exp.sectionID, true, false, true);
+    if(exp.isRelativ()) {
+        Simbol(directiv[1], exp.value, Simbol::tabel[exp.simbolID].sectionID, true, false, true);
+    } else {
+        Simbol(directiv[1], exp.value, -1, true, false, true);
+    }
 }
 
 void printDirectivFunctionForSecondPass(std::vector<std::string> directiv) {

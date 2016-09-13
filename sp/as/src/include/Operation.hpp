@@ -32,8 +32,6 @@ struct Operation {
         std::string condition;
         std::string flag;
         
-        int isValid;
-        
         static std::map<std::string, int> codeForValidName;
         static std::map<std::string, int> codeForValidCondition;
         static std::map<std::string, int> codeForValidFlag;
@@ -47,15 +45,14 @@ struct Operation {
         std::vector<std::string> operands;
         std::vector<std::string> type;
         
-        int areValid;
+        bool areValid;
         
-        Operand parseOperandWithType(std::string value, std::string type);
-        
+        Operands() : areValid(false) {}
         Operands(std::vector<std::string> _operands, std::string _type);
         
         std::string createHexRepresentation();
         
-        int registerHexRepresentation(std::string operand);
+        static int registerIndex(std::string reg, std::string supportedRegisters = "SP+PC+LR+PSW");
     };
     
     Opcode opcode;
@@ -66,8 +63,6 @@ struct Operation {
     Operation(std::vector<std::string> operation);
     
     std::string createHexRepresentation();
-    
-    bool isOperationValid();
 };
 
 #endif /* Operation_hpp */

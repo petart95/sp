@@ -8,7 +8,7 @@ int Section::newID = 0;
 int Section::current = 0;
 std::vector<Section> Section::tabel;
 
-Section::Section(std::string _name) : name(_name), locationCounter(0), id(newID++), data(""), realocation("") {
+Section::Section(std::string _name) : name(_name), locationCounter(0), id(newID++), data("") {
     tabel.push_back(*this);
 
     current = tabel.size() - 1;
@@ -70,6 +70,12 @@ int Section::offset() {
     return tabel[current].locationCounter;
 }
 
+void Section::addRealocationOfSizeAtOffset(Argument arg, int size, int _offset) {
+    if(arg.isRelativ()) {
+        tabel[current].realocationTabel.push_back(Realocation(arg.simbolID, size, 8*offset() + _offset));
+    }
+}
+
 std::istream & operator >> (std::istream &in, Section &section) {
     // TODO
     return in;
@@ -78,17 +84,14 @@ std::istream & operator >> (std::istream &in, Section &section) {
 std::ostream & operator << (std::ostream &out, const Section &section) {
     // Output section
     out << "# " << section.name << "\n";
-    out << section.data << "\n";
-    out << "\n";
+    out << section.data << "\n" << "\n";
     
     // Output section realocation tabel
     out << "# .ret" << section.name << "\n";
-    out << "# ";
-    out << std::left << std::setw(9) << std::setfill(' ') << "Offset";
-    out << std::left << std::setw(20) << std::setfill(' ') << "Type";
-    out << std::left << std::setw(4) << std::setfill(' ') << "Simbol ID";
-    out << "\n";
-    out << section.realocation;
+    out << Realocation::tabelRows();
+    for(int i = 0; i < section.realocationTabel.size(); i++) {
+        out << section.realocationTabel[i];
+    }
     
     return out;
 }
