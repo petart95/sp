@@ -23,11 +23,9 @@
 #define TYPE_NOT_USED(type) (contains((type), "NUSED"))
 
 Operation::Operands::Operands(std::vector<std::string> _operands, std::string _type)
-    : operands(_operands), type(splitStringWhitCharacterSet(_type, ",")), areValid(true) {
-    int typeIndex, operandsIndex;
-        
-    for(typeIndex = 0, operandsIndex = 0;
-        typeIndex < type.size() && operandsIndex < operands.size;
+    : operands(_operands), type(splitStringWhitCharacterSet(_type, ",")) {
+    int typeIndex = 0, operandsIndex = 0;
+    for(; typeIndex < type.size() && operandsIndex < operands.size();
         typeIndex++, operandsIndex++) {
         while(TYPE_CONSTANT(type[typeIndex]) || TYPE_NOT_USED(type[typeIndex])) {
             typeIndex++;
@@ -35,23 +33,21 @@ Operation::Operands::Operands(std::vector<std::string> _operands, std::string _t
         
         if (TYPE_REGISTER(type[typeIndex]) &&
             (registerHexRepresentation(operands[operandsIndex]) != -1 ||
-            !contains(splitStringWhitCharacterSet(type[typeIndex], "+"),
-                      toUpper(operands[operandsIndex])))) {
+            !contains(type[typeIndex], toUpper(operands[operandsIndex])))) {
             break;
         }
     }
-        
-    if(operandsIndex != operands.size() || typeIndex != type.size()) {
-        areValid = false;
-    }
+    
+    areValid = operandsIndex == operands.size() && typeIndex == type.size();     
 }
 
 std::string Operation::Operands::createHexRepresentation() {
     if(!areValid) {
-        ERROR(BOLD("Internal error: "), "Can not create hex representation for invalid operands");
+        ERROR(BOLD("Internal error: "),
+              "Can't create hex representation for invalid operands");
     }
 
-    long long operandsCode = 0, valueIndex = 0, typeIndex;
+    long long operandsCode = 0, operandsIndex = 0, typeIndex;
     for(typeIndex = 0; typeIndex < type.size(); typeIndex++) {
         int shift = 1, value = 0;
         
@@ -61,10 +57,12 @@ std::string Operation::Operands::createHexRepresentation() {
             shift = toIntager(type[typeIndex].substr(type[typeIndex].find("_")));
         } else if(TYPE_REGISTER(type[typeIndex])) {
             shift = contains(type[typeIndex], "+") ? 5 : 4;
-            value = registerHexRepresentation(value[valueIndex++]);
+            value = registerHexRepresentation(operands[operandsIndex++]);
         } else if(TYPE_ABSOLUT_EXPRESION(type[typeIndex])) {
             shift = toIntager(type[typeIndex].substr(type[typeIndex].find("_"), type[typeIndex].find_last_of("_")));
-            Argument exp = expresion(value[valueIndex++]);
+            Argument exp = expresion(operands[operandsIndex++]);
+
+            // TODO SIGNEXT
 
             value = exp.value;
             
@@ -80,7 +78,7 @@ std::string Operation::Operands::createHexRepresentation() {
 }
 
 int Operation::Operands::registerHexRepresentation(std::string operand) {
-    if((operand[0] == "R" || operand[0] = "r") && isIntager(operand.substr(1))) {
+    if((operand[0] == 'R' || operand[0] == 'r') && isIntager(operand.substr(1))) {
         int regIndex = toIntager(operand.substr(1));
         
         if(0 > regIndex || regIndex >= 16) {
@@ -100,3 +98,4 @@ int Operation::Operands::registerHexRepresentation(std::string operand) {
     
     return registers[toUpper(operand)];
 }
+

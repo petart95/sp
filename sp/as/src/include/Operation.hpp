@@ -61,9 +61,9 @@ struct Operation {
     Opcode opcode;
     Operands operands;
     
-    static std::map<std::string, std::string> operandTypeForOpcode;
+    static std::map<std::string, std::vector<std::string> > validLayouts;
     
-    Operation(std::vector<std::string>);
+    Operation(std::vector<std::string> operation);
     
     std::string createHexRepresentation();
     

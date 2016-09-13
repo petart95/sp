@@ -18,9 +18,9 @@
 Operation::Operation(std::vector<std::string> operation) : opcode(operation[0]) {
     std::vector<std::string> _operands(operation.begin() + 1, operation.end());
           
-    std::map<std::string, std::vector<std::string>>::iterator it_type iterator;
+    std::map<std::string, std::vector<std::string> >::iterator iterator;
           
-    for(iterator = supportedOperations.begin(); iterator != supportedOperations.end(); iterator++) {
+    for(iterator = validLayouts.begin(); iterator != validLayouts.end(); iterator++) {
         if(iterator->first == opcode.name) {
             operands = Operands(_operands, iterator->second);
             
@@ -30,10 +30,9 @@ Operation::Operation(std::vector<std::string> operation) : opcode(operation[0]) 
         }
     }
     
-    if(!operands) {
-        ERROR(BOLD("operation for opcode '" , BOLD(operation[0]), "' was not found"));
-    } else if(!operands.areValid) {
-        ERROR(" operands layout for operation '", BOLD(operation[0]), "' is unsupported");
+    if(!operands.areValid) {
+        ERROR("operands layout for operation '",
+              BOLD(operation[0]), "' is unsupported");
     }
 }
 
@@ -45,8 +44,8 @@ bool Operation::isOperationValid() {
     return opcode.isValid && operands.areValid;
 }
 
-std::map<std::string, std::vector<std::string>> Operation::supportedOperations =
-    createMap<std::string, std::vector<std::string>>
+std::map<std::string, std::vector<std::string> > Operation::validLayouts =
+    createMap<std::string, std::vector<std::string> >
     ("int",  createVector<std::string>
              ("ABSEXP_4,NUSED_20"))
     ("add",  createVector<std::string>
