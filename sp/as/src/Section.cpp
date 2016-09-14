@@ -75,8 +75,18 @@ void Section::addRealocationOfSizeAtOffset(Argument arg, int size, int _offset) 
 }
 
 void Section::read(std::istream &in) {
-    // TODO
-    std::string name;
+    std::string name, data, line;
+    std::vector<std::string> realocationTabel;
+    
+    in >> name >> name;
+    getline(in, line);
+    getline(in, data);
+    getline(in, line);
+    getline(in, line);
+    getline(in, line);
+    while(getline(in, line), line != "\n") {
+        realocationTabel.push_back(Realocation(line));
+    }
 }
 
 std::ostream & operator << (std::ostream &out, const Section &section) {

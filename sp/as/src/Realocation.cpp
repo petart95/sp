@@ -1,9 +1,16 @@
 #include "Realocation.h"
 #include "ProcessString.h"
 
-std::istream & operator >> (std::istream &in, Realocation &simbol) {
-    // TODO
-    return in;
+Realocation::Realocation(std::string line) {
+    std::string type, bitOffsetString;
+    std::istringstream stm(line);
+    
+    stm >> bitOffsetString;
+    stm >> type;
+    stm >> simbolName;
+    
+    size = type.substr(type.find_last_of("_") + 1);
+    bitOffset = toIntager("0x" + bitOffsetString);
 }
 
 std::ostream & operator << (std::ostream &out, const Realocation &realocation) {

@@ -13,9 +13,10 @@ struct Realocation {
     Realocation(std::string _simbolName, int _size, int _bitOffset)
         : simbolName(_simbolName), size(_size), bitOffset(_bitOffset) {}
     
+    Realocation(std::string line);
+    
     static std::string tabelRows();
     
-    friend std::istream & operator >> (std::istream &in, Realocation &realocation);
     friend std::ostream & operator << (std::ostream &out, const Realocation &realocation);
 };
 

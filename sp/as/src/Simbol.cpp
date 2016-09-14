@@ -72,7 +72,7 @@ int Simbol::withName(std::string name) {
 }
 
 void Simbol::read(std::istream &in) {
-    std::string isGlobalString, section, name;
+    std::string isGlobalString, section, name, line;
     int id, offset;
     
     in >> id;
@@ -83,7 +83,6 @@ void Simbol::read(std::istream &in) {
     
     bool isGlobal = isGlobalString == "Local" == 0 ? false : true;
 
-    std::string line;
     getline(in, line);
     
     Simbol(offset, name, section, isGlobal);
