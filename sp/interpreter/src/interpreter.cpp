@@ -30,8 +30,7 @@ void init(int argc, char** argv) {
 	initLog();
 
 	if(argc < 3) {
-		printf("Usage: as [format] [file1] [file2] [...]\n");
-		exit(0);
+		ERROR("Usage: as [format] [file1] [file2] [...]");
 	}
 }
 

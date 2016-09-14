@@ -6,12 +6,12 @@
 #include <vector>
 
 struct Realocation {
+    std::string simbolName;
     int bitOffset;
-    int simbolID;
     int size;
     
-    Realocation(int _simbolID, int _size, int _bitOffset)
-        : simbolID(_simbolID), size(_size), bitOffset(_bitOffset) {}
+    Realocation(std::string _simbolName, int _size, int _bitOffset)
+        : simbolName(_simbolName), size(_size), bitOffset(_bitOffset) {}
     
     static std::string tabelRows();
     

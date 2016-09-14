@@ -49,8 +49,7 @@ void init(int argc, char** argv) {
 
     // Check usage
     if(argc != 2) {
-        printf("Usage: as [file]\n");
-        exit(0);
+        ERROR("Usage: as [file]");
     }
 
     // Open files
@@ -121,7 +120,7 @@ void processLineFirstPass(std::string line) {
     if(line.find(":") != std::string::npos) {
         std::string label = line.substr(0, line.find(":"));
 
-        Simbol(label, Section::tabel[Section::current].locationCounter, Section::current);
+        Simbol::createLocal(label);
         
         line = line.substr(line.find(":") + 1);
     }

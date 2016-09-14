@@ -4,14 +4,14 @@
 
 #define ERROR_PREFIX "Invalid operation: "
 
-Argument::Argument(Simbol simbol) : value(simbol.offset), simbolID(simbol.id) {
-    if(simbol.isDefined){
-        simbolID = Simbol::withSectionID(simbol.sectionID);
+Argument::Argument(Simbol simbol) : value(simbol.offset), simbolName(simbol.name) {
+    if(simbol.isDefined()){
+        simbolName = simbol.section;
     }
 }
 
 bool Argument::isRelativ() const {
-    return simbolID != -1;
+    return simbolName != ABSOLUT;
 }
 
 Argument Argument::updateForNegation() {
@@ -111,7 +111,7 @@ Argument& Argument::operator+=(const Argument& rhs){
     if(rhs.isRelativ() && isRelativ()) {
         ERROR("'", BOLD("+"), "' can't be used between relativ arguments");
     } else if(rhs.isRelativ()) {
-        simbolID = rhs.simbolID;
+        simbolName = rhs.simbolName;
     }
     
     value += rhs.value;
@@ -120,14 +120,14 @@ Argument& Argument::operator+=(const Argument& rhs){
 }
 Argument& Argument::operator-=(const Argument& rhs){
     if(rhs.isRelativ() && isRelativ()) {
-        if(Simbol::withSectionID(simbolID) != Simbol::withSectionID(rhs.simbolID)) {
+        if(simbolName != rhs.simbolName) {
             ERROR("'", BOLD("-"), "' can't be used between relativ arguments,",
                   "if not from same section");
         } else {
-            simbolID = -1;
+            simbolName = ABSOLUT;
         }
     } else if(rhs.isRelativ()) {
-        simbolID = rhs.simbolID;
+        simbolName = rhs.simbolName;
     }
 
     value -= rhs.value;

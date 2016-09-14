@@ -11,8 +11,8 @@ std::ostream & operator << (std::ostream &out, const Realocation &realocation) {
     
     out << "  ";
     out << std::left << std::setw(12) << std::setfill(' ') << toHexadecimal(realocation.bitOffset, 8);
-    out << std::left << std::setw(20) << std::setfill(' ') << type;
-    out << std::left << std::setw(4) << std::setfill(' ') << realocation.simbolID;
+    out << std::left << std::setw(10) << std::setfill(' ') << type;
+    out << std::left << std::setw(4) << std::setfill(' ') << realocation.simbolName;
     out << "\n";
     
     return out;
@@ -23,8 +23,8 @@ std::string Realocation::tabelRows() {
     
     stream << "# ";
     stream << std::left << std::setw(12) << std::setfill(' ') << "Bit Offset";
-    stream << std::left << std::setw(20) << std::setfill(' ') << "Type";
-    stream << std::left << std::setw(4) << std::setfill(' ') << "Simbol ID";
+    stream << std::left << std::setw(10) << std::setfill(' ') << "Type";
+    stream << std::left << std::setw(4) << std::setfill(' ') << "Simbol";
     stream << "\n";
     
     return stream.str();

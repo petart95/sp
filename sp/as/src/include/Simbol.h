@@ -5,25 +5,32 @@
 #include <string>
 #include <vector>
 
+#define UNDEFINED "UNDEFINED"
+#define ABSOLUT "ABSOLUT"
+
+struct Argument;
+
 struct Simbol {
-    static int newID;
-    
     static std::vector<Simbol> tabel;
     
-    int id;
     int offset;
-    int sectionID;
-    std::string name;
     bool isGlobal;
-    bool isDefined;
+    std::string name;
+    std::string section;
 
-    Simbol(std::string _name, int _offset, int _sectionID, bool _isDefined = true, bool _isGlobal = false, bool update = false);
+    Simbol(int _offset, std::string _name, std::string _section, bool _isGlobal = false);
     
-    static std::string tabelRows();
+    bool isDefined();
+    bool isRelativ();
+    
     static int withName(std::string name);
-    static int withSectionID(int sectionID);
-
-    friend std::istream & operator >> (std::istream &in, Simbol &simbol);
+    
+    static void createLocal(std::string name);
+    static void createExternal(std::string name);
+    static void update(std::string name, Argument arg);
+    
+    static void read(std::istream &in);
+    static std::string tabelRows();
     friend std::ostream & operator << (std::ostream &out, const Simbol &simbol);
 };
 

@@ -10,12 +10,9 @@
 #include "Realocation.h"
 
 struct Section {
-    static int newID;
-    
     static int current;
     static std::vector<Section> tabel;
     
-    int id;
     int locationCounter;
     std::string name;
     std::string data;
@@ -32,7 +29,7 @@ struct Section {
     static int offset();
     static void addRealocationOfSizeAtOffset(Argument arg, int size, int offset = 0);
 
-    friend std::istream & operator >> (std::istream &in, Section &section);
+    static void read(std::istream &in);
     friend std::ostream & operator << (std::ostream &out, const Section &section);
 };
 

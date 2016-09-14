@@ -3,17 +3,15 @@
 #include "Section.h"
 #include "Simbol.h"
 
-int Section::newID = 0;
-
 int Section::current = 0;
 std::vector<Section> Section::tabel;
 
-Section::Section(std::string _name) : name(_name), locationCounter(0), id(newID++), data("") {
+Section::Section(std::string _name) : name(_name), locationCounter(0), data("") {
     tabel.push_back(*this);
 
     current = tabel.size() - 1;
 
-    Simbol(std::string(name), 0, current);
+    Simbol(0, name, name, true);
 }
 
 bool Section::isNameValid(std::string name) {
@@ -72,13 +70,13 @@ int Section::offset() {
 
 void Section::addRealocationOfSizeAtOffset(Argument arg, int size, int _offset) {
     if(arg.isRelativ()) {
-        tabel[current].realocationTabel.push_back(Realocation(arg.simbolID, size, 8*offset() + _offset));
+        tabel[current].realocationTabel.push_back(Realocation(arg.simbolName, size, 8*offset() + _offset));
     }
 }
 
-std::istream & operator >> (std::istream &in, Section &section) {
+void Section::read(std::istream &in) {
     // TODO
-    return in;
+    std::string name;
 }
 
 std::ostream & operator << (std::ostream &out, const Section &section) {

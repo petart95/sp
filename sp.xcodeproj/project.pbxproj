@@ -19,6 +19,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		AE34A99C1D89820100A33395 /* interpreter.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = interpreter.xcodeproj; path = interpreter/interpreter.xcodeproj; sourceTree = "<group>"; };
 		AE90BD731D6F07DB005AF3BF /* sp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = sp; sourceTree = BUILT_PRODUCTS_DIR; };
 		AEA735311D75D65B001398E4 /* as.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = as.xcodeproj; path = as/as.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -34,6 +35,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		AE34A99D1D89820100A33395 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		AE90BD6A1D6F07DB005AF3BF = {
 			isa = PBXGroup;
 			children = (
@@ -53,6 +61,7 @@
 		AE90BD751D6F07DB005AF3BF /* sp */ = {
 			isa = PBXGroup;
 			children = (
+				AE34A99C1D89820100A33395 /* interpreter.xcodeproj */,
 				AEA735311D75D65B001398E4 /* as.xcodeproj */,
 			);
 			path = sp;
@@ -113,6 +122,10 @@
 				{
 					ProductGroup = AEA735321D75D65B001398E4 /* Products */;
 					ProjectRef = AEA735311D75D65B001398E4 /* as.xcodeproj */;
+				},
+				{
+					ProductGroup = AE34A99D1D89820100A33395 /* Products */;
+					ProjectRef = AE34A99C1D89820100A33395 /* interpreter.xcodeproj */;
 				},
 			);
 			projectRoot = "";

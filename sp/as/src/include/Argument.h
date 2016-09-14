@@ -5,14 +5,13 @@
 
 struct Argument {
 	long long value;
-	long long simbolID;
+    std::string simbolName;
 
     bool isRelativ() const;
     
     Argument(Simbol simbol);
-	Argument(long long _value) : value(_value), simbolID(-1) {}
-	Argument(long long _value, long long _simbolID)
-	 : value(_value), simbolID(_simbolID) {}
+    Argument(long long _value, std::string _simbolName = ABSOLUT)
+	 : value(_value), simbolName(_simbolName) {}
 
 	Argument updateForNegation();
 	Argument updateForComplementation();

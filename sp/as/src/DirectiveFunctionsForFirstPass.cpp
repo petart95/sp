@@ -10,7 +10,7 @@
 
 void externDirectivFunctionForFirstPass(std::vector<std::string> directiv) {
     for(int i = 1; i < directiv.size(); i++) {
-        Simbol(directiv[i], 0, -1, false, true);
+        Simbol::createExternal(directiv[i]);
     }
 }
 
@@ -76,13 +76,7 @@ void setDirectivFunctionForFirstPass(std::vector<std::string> directiv) {
         ERROR("'", BOLD(directiv[0]), "' must have two arguments");
     }
     
-    Argument exp = expresion(directiv[2]);
-    
-    if(exp.isRelativ()) {
-        Simbol(directiv[1], exp.value, Simbol::tabel[exp.simbolID].sectionID, true, false, true);
-    } else {
-        Simbol(directiv[1], exp.value, -1, true, false, true);
-    }
+    Simbol::update(directiv[1], expresion(directiv[2]));
 }
 
 std::map<std::string, DirectiveFunctionPointer> Directive::functionForFirstPass =
