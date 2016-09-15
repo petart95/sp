@@ -234,8 +234,10 @@ Argument Expresion::evaluate() {
     return result;
 }
 
-Argument expresion(std::string s) {
-    Expresion exp(s);
+Argument expresion(std::string str) {
+    str.erase(remove_if(str.begin(), str.end(), isspace), str.end());
+    
+    Expresion exp(str);
 
     return exp.evaluate();
 }

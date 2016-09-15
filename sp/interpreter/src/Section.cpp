@@ -6,12 +6,18 @@
 int Section::current = 0;
 std::vector<Section> Section::tabel;
 
-Section::Section(std::string _name) : name(_name), locationCounter(0), data("") {
+Section::Section(std::string _name)
+    : name(_name), locationCounter(0), data(""), absolutPosition(-1) {
     tabel.push_back(*this);
 
     current = tabel.size() - 1;
 
     Simbol(0, name, name, true);
+}
+
+Section::Section(std::string _name, std::string _data, std::vector<Realocation> _realocationTabel)
+    : name(_name), data(_data), realocationTabel(_realocationTabel), absolutPosition(-1)  {
+    tabel.push_back(*this);
 }
 
 bool Section::isNameValid(std::string name) {
@@ -76,7 +82,7 @@ void Section::addRealocationOfSizeAtOffset(Argument arg, int size, int _offset) 
 
 void Section::read(std::istream &in) {
     std::string name, data, line;
-    std::vector<std::string> realocationTabel;
+    std::vector<Realocation> realocationTabel;
     
     in >> name >> name;
     getline(in, line);
@@ -84,9 +90,13 @@ void Section::read(std::istream &in) {
     getline(in, line);
     getline(in, line);
     getline(in, line);
-    while(getline(in, line), line != "\n") {
+    while(getline(in, line) && !line.empty()) {
         realocationTabel.push_back(Realocation(line));
     }
+    
+    data.erase(remove_if(data.begin(), data.end(), isspace), data.end());
+    
+    Section(name, data, realocationTabel);
 }
 
 std::ostream & operator << (std::ostream &out, const Section &section) {

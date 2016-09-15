@@ -49,13 +49,22 @@ void Simbol::update(std::string name, Argument arg) {
     
     if(index != -1) {
         tabel[index].offset = arg.value;
-        tabel[index].section = Simbol::tabel[Simbol::withName(arg.simbolName)].section;
+        
+        if(arg.simbolName != ABSOLUT) {
+            tabel[index].section = Simbol::tabel[Simbol::withName(arg.simbolName)].section;
+        } else  {
+            tabel[index].section = ABSOLUT;
+        }
         
         if(tabel[index].section == UNDEFINED) {
             ERROR("Can't use undefined simbol '", BOLD(arg.simbolName),"' when updating simbol value");
         }
     } else {
-        Simbol(arg.value, name, Simbol::tabel[Simbol::withName(arg.simbolName)].section);
+        if(arg.simbolName != ABSOLUT) {
+            Simbol(arg.value, name, Simbol::tabel[Simbol::withName(arg.simbolName)].section);
+        } else  {
+            Simbol(arg.value, name, ABSOLUT);
+        }
     }
 }
 
@@ -81,11 +90,17 @@ void Simbol::read(std::istream &in) {
     in >> section;
     in >> isGlobalString;
     
-    bool isGlobal = isGlobalString == "Local" == 0 ? false : true;
+    bool isGlobal = isGlobalString != "Local" == 0 ? false : true;
 
     getline(in, line);
     
     Simbol(offset, name, section, isGlobal);
+}
+
+void Simbol::read(std::string line) {
+    std::istringstream stream(line);
+    
+    read(stream);
 }
 
 std::ostream & operator << (std::ostream &out, const Simbol &simbol) {

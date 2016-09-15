@@ -9,7 +9,7 @@ Realocation::Realocation(std::string line) {
     stm >> type;
     stm >> simbolName;
     
-    size = type.substr(type.find_last_of("_") + 1);
+    size = toIntager(type.substr(type.find_last_of("_") + 1));
     bitOffset = toIntager("0x" + bitOffsetString);
 }
 

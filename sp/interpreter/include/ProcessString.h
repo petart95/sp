@@ -20,7 +20,7 @@ template < typename T > std::string toString(const T& n ) {
 template< typename T > std::string toHexadecimal( T i, int size ) {
     std::stringstream stream;
     stream << std::setfill('0') << std::setw(size)<< std::hex << i;
-    return stream.str();
+    return stream.str().substr(stream.str().length() - size, size);
 }
 
 bool isIntager(std::string s);

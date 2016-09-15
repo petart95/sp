@@ -14,11 +14,13 @@ struct Section {
     static std::vector<Section> tabel;
     
     int locationCounter;
+    int absolutPosition;
     std::string name;
     std::string data;
     std::vector<Realocation> realocationTabel;
     
     Section(std::string name);
+    Section(std::string _name, std::string _data, std::vector<Realocation> _realocationTabel);
     
     static bool isNameValid(std::string name);
     static int withName(std::string name);
@@ -31,6 +33,14 @@ struct Section {
 
     static void read(std::istream &in);
     friend std::ostream & operator << (std::ostream &out, const Section &section);
+    
+    bool operator < (const Section& section) const	{
+        return (name < section.name);
+    }
+    
+    bool operator > (const Section& section) const	{
+        return (name > section.name);
+    }
 };
 
 #endif

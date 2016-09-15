@@ -30,6 +30,7 @@ struct Simbol {
     static void update(std::string name, Argument arg);
     
     static void read(std::istream &in);
+    static void read(std::string line);
     static std::string tabelRows();
     friend std::ostream & operator << (std::ostream &out, const Simbol &simbol);
 };

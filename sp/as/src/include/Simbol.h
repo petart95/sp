@@ -17,7 +17,7 @@ struct Simbol {
     bool isGlobal;
     std::string name;
     std::string section;
-
+    
     Simbol(int _offset, std::string _name, std::string _section, bool _isGlobal = false);
     
     bool isDefined();
@@ -30,6 +30,7 @@ struct Simbol {
     static void update(std::string name, Argument arg);
     
     static void read(std::istream &in);
+    static void read(std::string line);
     static std::string tabelRows();
     friend std::ostream & operator << (std::ostream &out, const Simbol &simbol);
 };

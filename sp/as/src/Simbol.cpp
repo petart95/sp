@@ -9,9 +9,9 @@
 std::vector<Simbol> Simbol::tabel;
 
 Simbol::Simbol(int _offset, std::string _name, std::string _section, bool _isGlobal)
-    : name(_name), offset(_offset), section(_section), isGlobal(_isGlobal) {
+: name(_name), offset(_offset), section(_section), isGlobal(_isGlobal) {
     int index = withName(name);
-
+    
     if(index != -1) {
         if(tabel[index].isDefined()) {
             ERROR("Multiple definision of '", BOLD(name), "'");
@@ -61,13 +61,13 @@ void Simbol::update(std::string name, Argument arg) {
 
 int Simbol::withName(std::string name) {
     int tabelSize = tabel.size();
-
+    
     for(int i = 0; i < tabelSize; i++) {
         if(name.compare(tabel[i].name) == 0) {
             return i;
         }
     }
-
+    
     return -1;
 }
 
@@ -81,11 +81,17 @@ void Simbol::read(std::istream &in) {
     in >> section;
     in >> isGlobalString;
     
-    bool isGlobal = isGlobalString == "Local" == 0 ? false : true;
-
+    bool isGlobal = isGlobalString != "Local" == 0 ? false : true;
+    
     getline(in, line);
     
     Simbol(offset, name, section, isGlobal);
+}
+
+void Simbol::read(std::string line) {
+    std::istringstream stream(line);
+    
+    read(stream);
 }
 
 std::ostream & operator << (std::ostream &out, const Simbol &simbol) {

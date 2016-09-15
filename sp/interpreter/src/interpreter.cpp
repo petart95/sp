@@ -1,25 +1,30 @@
-#include "as.h"
+#include <algorithm>
+#include <cstring>
 
 #include "Simbol.h"
+#include "Section.h"
 
 #include "Operation.hpp"
 #include "ProcessString.h"
 
 #include "Expresion.h"
+#include "Error.h"
+#include "Log.h"
 
-#include <algorithm>
-#include <cstring>
+#define dotSimbol Simbol::tabel[0]
+
+char* MEM;
 
 std::ifstream in;
 std::ofstream out;
 
-std::vector<Simbol> simbolTabel;
-std::vector<Section> sectionTabel;
-int currentSectionIndex = 0;
-int currentMemoryPosition = 0;
+std::string inFile;
+int currentLineNumber = 0;
+int currentColumNumber = -1;
 
-void openFile(std::string inFile) {
-	in.open(inFile.c_str(), std::ifstream::in);
+void openFile(std::string inputFile) {
+    inFile = inputFile;
+	in.open(inputFile.c_str(), std::ifstream::in);
 }
 
 void closeFile() {
@@ -27,137 +32,210 @@ void closeFile() {
 }
 
 void init(int argc, char** argv) {
+    // Initalize log
 	initLog();
 
+    // Check usage
 	if(argc < 3) {
 		ERROR("Usage: as [format] [file1] [file2] [...]");
 	}
+    
+    // Create "." simbol
+    Simbol(0, ".", ABSOLUT, true);
 }
 
-void close() {
-	closeLog();
-
-	closeFile();
+void parseFormatFile(char* formatFile) {
+    // Open format file
+    openFile(formatFile);
+    
+    std::string line;
+    
+    while (getline(in, line) && !line.empty()) {
+        if(contains(line , "=")) {
+            // Calculate expresion
+            std::string simbolName = line.substr(0, line.find("="));
+            Argument exp = expresion(line.substr(line.find("=") + 1));
+            
+            LOG("'", simbolName, "' = ", exp.value, " + absolut(", exp.simbolName, ")");
+            
+            if(simbolName == "." && exp.isRelativ()) {
+                ERROR("Current memory position can't have relativ value (can't depend on '", BOLD(exp.simbolName),"')");
+            } else if(simbolName == "." && exp.value < dotSimbol.offset) {
+                ERROR("Current memory position can't be moved backword");
+            }
+            
+            // Update simbol
+            Simbol::update(simbolName, exp);
+        } else {
+            if(Section::withName(line) == -1) {
+                ERROR("Section '", BOLD(line), "' dosn't exist");
+            }
+            
+            // Set section absolut position
+            Section::tabel[Section::withName(line)].absolutPosition = dotSimbol.offset;
+            
+            // Move current memory position
+            dotSimbol.offset += Section::tabel[Section::withName(line)].data.length()/2;
+        }
+    }
+    
+    // Close file
+    closeFile();
 }
 
-void parseFile() {
-	std::string line;
-	
-	int sectionOffset = sectionTabel.size();
-	int simbolOffset = simbolTabel.size();
-
-	// Ucitavanje tabele simbola
-	getline(in, line); // # Tabela simbola
-	getline(in, line); // # ID  Name           Offset   Section ID Global/Local Defined/Undefnd
-	while (getline(in, line) && line.length() > 5) {
-		Simbol(line, sectionOffset);
-	}
-
-	while(!in.eof()) {
-		Section(in, simbolOffset);
-	}
+void calculateSectionAbsolutePositions(char* formatFile) {
+    // Pars format file
+    parseFormatFile(formatFile);
+    
+    // Sort sections lexicographic
+    std::sort(Section::tabel.begin(), Section::tabel.end());
+    
+    // Calculete section absolut positions
+    int sectionTabelSize = Section::tabel.size();
+    
+    for(int i = 0; i < sectionTabelSize; i++) {
+        if(Section::tabel[i].absolutPosition == -1) {
+            // Set section absolut position
+            Section::tabel[i].absolutPosition = dotSimbol.offset;
+            
+            // Move current memory position
+            dotSimbol.offset += Section::tabel[i].data.length()/2;
+        }
+    }
 }
 
-void checkSimbolTabel() {
-	int simbolTabelSize = simbolTabel.size();
-
-	for(int i = 0; i < simbolTabelSize; i++) {
-		int numberOfDefinisions = 0;
-		for(int j = 0; j < simbolTabelSize; j++) {
-			if(simbolTabel[i].name.compare(simbolTabel[j].name) == 0) {
-				if(simbolTabel[j].isDefined) {
-					numberOfDefinisions++;
-				}
-
-				if(!simbolTabel[i].isDefined && simbolTabel[j].isDefined) {
-					simbolTabel[i].offset = simbolTabel[j].offset; 
-					simbolTabel[i].sectionIndex = simbolTabel[j].sectionIndex; 
-				}
-			}
-		}
-
-		if(numberOfDefinisions > 1) {
-			log("***ERROR*** Multiple definisions of a simbol: " + simbolTabel[i].name);
-		} else if(numberOfDefinisions == 0) {
-			log("***ERROR*** Undefined simbol: " + simbolTabel[i].name);
-		}
-	}
+void loadDataFromInputFile(char* inputFile) {
+    // Open file
+    openFile(inputFile);
+    
+    std::string line;
+    
+    getline(in, line);
+    getline(in, line);
+    
+    // Load simbols
+    while (getline(in, line) && !line.empty()) {
+        Simbol::read(line);
+    }
+    
+    // Load sections
+    while(!in.eof()) {
+        Section::read(in);
+    }
+    
+    // Close file
+    closeFile();
 }
 
-void parsFormatFile() {
-	std::string line;	
-
-	Simbol(".", 0, -1, true, true);
-	currentMemoryPosition = simbolTabel.size() - 1;
-	int oldPosition = 0;
-
-	while (getline(in, line)) {
-		if(line.find("=") != std::string::npos) {
-			int simbolIndex = Simbol::findeSimbolWithName(line.substr(0, line.find("=")));
-			Expresion expresion(line.substr(line.find("=") + 1));
-			if(simbolIndex == -1) {
-				Simbol(line.substr(0, line.find("=")), expresion.evaluate().value, -1, true, true);
-			} else {
-				simbolTabel[simbolIndex].offset = expresion.evaluate().value; 
-			}
-		} else {
-			int sectionIndex = Section::findeSectionWithName(line);
-			if(sectionIndex != -1) {
-				sectionTabel[sectionIndex].absolutPosition = simbolTabel[currentMemoryPosition].offset;
-				simbolTabel[currentMemoryPosition].offset += sectionTabel[sectionIndex].data.length()/2;
-			} else {
-				log("***ERROR*** Section " + line + " dos not exsist");
-			}
-		}
-
-		if(oldPosition > simbolTabel[currentMemoryPosition].offset) {
-			log("***ERROR*** Current memory position moved backword\n");
-		} else {
-			oldPosition = simbolTabel[currentMemoryPosition].offset;
-		}
-	}
+void link(int argc, char** argv) {
+    // Load all simbols
+    for(int i = 2; i < argc; i++){
+        loadDataFromInputFile(argv[i]);
+    }
+    
+    // Calculete section absolut position
+    calculateSectionAbsolutePositions(argv[1]);
+    
+    // Check that all Simbols are defined
+    int simbolTabelSize = Simbol::tabel.size();
+    
+    for(int i = 0; i < simbolTabelSize; i++) {
+        if(!Simbol::tabel[i].isDefined()) {
+            ERROR("Undefined simbol '", BOLD(Simbol::tabel[i].name), "'");
+        }
+    }
 }
 
-void calculateSectionAbsolutePositions() {
-	int sectionTabelSize = sectionTabel.size();
-	for(int i = 0; i < sectionTabelSize; i++) {
-		if(sectionTabel[i].absolutPosition == -1) {
-			sectionTabel[i].absolutPosition = simbolTabel[currentMemoryPosition].offset; 
-			simbolTabel[currentMemoryPosition].offset += sectionTabel[i].data.length()/2;
-		}
-		log(sectionTabel[i].name + " absolut position " + toString(sectionTabel[i].absolutPosition));
-	}
+#define GETMASK(index, size) (((1L << (size)) - 1L) << (index))
+#define READFROM(data, index, size) (((data) & GETMASK((index), (size))) >> (index))
+#define WRITETO(data, index, size, value) ((data) = ((data) & (~GETMASK((index), (size)))) | ((value) << (index)))
+
+unsigned long long readFromMem(unsigned long long memIndex, unsigned long long size) {
+    unsigned long long data = *((long long *)(((long long)MEM) + memIndex));
+    unsigned long long index = sizeof(long long)*8 - size;
+    
+    return READFROM(data, index, size);
+}
+
+void writeToMem(unsigned long long memIndex, unsigned long long size, unsigned long long value) {
+    unsigned long long data = *((long long *)(((long long)MEM) + memIndex));
+    unsigned long long index = sizeof(long long)*8 - size;
+    
+    value =  WRITETO(data, index, size, value);
+    
+    *((long long *)(((long long)MEM) + memIndex)) = value;
+}
+
+void realoc(Section section, Realocation realoc) {
+    long long pos = section.absolutPosition*8 + realoc.bitOffset;
+    
+    Simbol *simbol = &Simbol::tabel[Simbol::withName(realoc.simbolName)];
+    Section *simbolSection = &Section::tabel[Section::withName(simbol->section)];
+    
+    LOG(toHexadecimal(*((long long *)(((long long) MEM) + pos)), sizeof(long long)*2));
+    
+    int value = simbol->offset + simbolSection->absolutPosition + readFromMem(pos, realoc.size);
+    
+    writeToMem(pos, realoc.size, value);
+    
+    LOG("index ", (sizeof(long long)*8 - (realoc.size)), " size ", realoc.size);
+    LOG(toHexadecimal(value, realoc.size/4+1));
+    LOG(toHexadecimal(*((long long *)((long long) MEM + pos)), sizeof(long long)*2));
+    LOG("------------");
+}
+
+void load() {
+    // Create Memory
+    MEM = (char*) calloc(dotSimbol.offset, sizeof(char));
+    
+    // Load data into Memory
+    int sectionTabelSize = Section::tabel.size();
+    
+    for(int i = 0; i < sectionTabelSize; i++) {
+        for(int j = 0; j < Section::tabel[i].data.length(); j+=2) {
+            MEM[Section::tabel[i].absolutPosition + j/2] =
+                toIntager("0x" + Section::tabel[i].data.substr(j, 2));
+        }
+    }
+    
+    // Realoc
+    for(int i = 0; i < sectionTabelSize; i++) {
+        int ralocationTabelSize = Section::tabel[i].realocationTabel.size();
+        
+        for(int j = 0; j < ralocationTabelSize; j++) {
+            realoc(Section::tabel[i], Section::tabel[i].realocationTabel[j]);
+        }
+    }
 }
 
 int main(int argc, char** argv) {
 	init(argc, argv);
-	
-	// Parse input files
-	for(int i = 2; i < argc; i++){
-		openFile(argv[i]);
-		parseFile();
-		closeFile();
-	}
+    
+	// Link input files
+	link(argc, argv);
 
-	// Pars format file
-	openFile(argv[1]);
-	parsFormatFile();
-	closeFile();
+    // Load data into Memory and realocate
+    load();
+    
+    std::cout << Simbol::tabelRows();
+    for(int i = 0; i < Simbol::tabel.size(); i++) {
+        std::cout << Simbol::tabel[i];
+    }
+    
+    for(int i = 0; i < Section::tabel.size(); i++) {
+        std::cout << "\n" << Section::tabel[i];
+    }
+    
+    std::cout << "# Memomry layout\n";
+    
+    for(int i = 0; i < dotSimbol.offset; i++) {
+        std::cout << toHexadecimal((int)MEM[i], 2) << " ";
+    }
+    std::cout << "\n";
 
-	// Sort sections alphabeticaly
-	std::sort(sectionTabel.begin(), sectionTabel.end());
-
-	// Check simbol tabel for multiple definisions and undefined simboles
-	checkSimbolTabel();
-
-	// Calculate section absoulte positions
-	calculateSectionAbsolutePositions();
-
-	// Load data into memory
-
-	// Realocate data wher necessary
-
-	close();
+    // Close
+    closeLog();
+    closeFile();
 
 	return 0;
 }
