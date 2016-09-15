@@ -1,52 +1,38 @@
 #ifndef SIMBOL_H_
 #define SIMBOL_H_
 
+#include <iostream>
 #include <string>
-#include <cstring>
 #include <vector>
 
-struct Section {
-	static int newID;
-	
-	std::string name;
-	std::string data;
-	std::string realocation;
+#define UNDEFINED "UNDEFINED"
+#define ABSOLUT "ABSOLUT"
 
-	int id;
-	int locationCounter;
-	int simbolOffset;
-	int absolutPosition;
-
-	Section(std::string _name) : name(_name), locationCounter(0), id(newID++), data(""), realocation(""), absolutPosition(-1) {}
-	Section(std::ifstream & in, int simbolOffset);
-
-	static int findeSectionWithName(std::string name);
-
-	bool operator < (const Section& section) const	{
-		return (name < section.name);
-	}
-
-	bool operator > (const Section& section) const	{
-		return (name > section.name);
-	}
-};
+struct Argument;
 
 struct Simbol {
-	static int newID;
-	
-	int id;
-	std::string name;
-	int offset;
-	int sectionIndex;
-	bool isGlobal;
-	bool isDefined;
+    static std::vector<Simbol> tabel;
+    
+    int offset;
+    bool isGlobal;
+    std::string name;
+    std::string section;
 
-	Simbol(std::string line, int sectionOffset);
-	Simbol(std::string _name, int _offset, int _sectionIndex, bool _isDefined = true, bool _isGlobal = false); 
-
-	static int findeSimbolWithName(std::string name);
+    Simbol(int _offset, std::string _name, std::string _section, bool _isGlobal = false);
+    
+    bool isDefined();
+    bool isRelativ();
+    
+    static int withName(std::string name);
+    
+    static void createLocal(std::string name);
+    static void createExternal(std::string name);
+    static void update(std::string name, Argument arg);
+    
+    static void read(std::istream &in);
+    static std::string tabelRows();
+    friend std::ostream & operator << (std::ostream &out, const Simbol &simbol);
 };
 
 #endif /* SIMBOL_H_ */
-
 

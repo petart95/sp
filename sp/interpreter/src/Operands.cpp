@@ -9,111 +9,102 @@
 #include "Operation.hpp"
 #include "CreateMap.hpp"
 #include "ProcessString.h"
-#include "as.h"
 #include "Log.h"
+#include "Error.h"
 
 #include "Expresion.h"
+#include "Argument.h"
+#include "Section.h"
 
-Operation::Operands::Operands(std::vector<std::string> _value, std::string _type)
-    : value(_value), type(splitStringWhitCharacterSet(_type, ",")), areValid(true) {
-    if(value.size() != type.size()) {
-        areValid = false;
-        return;
+#define OPERANDS_LENGTH 6
+
+#define TYPE_CONSTANT(type) (contains((type), "CONST"))
+#define TYPE_REGISTER(type) (contains((type), "REG"))
+#define TYPE_ABSOLUT_EXPRESION(type) (contains((type), "ABSEXP"))
+#define TYPE_NOT_USED(type) (contains((type), "NUSED"))
+
+Operation::Operands::Operands(std::vector<std::string> _operands, std::string _type)
+    : operands(_operands), type(splitStringWhitCharacterSet(_type, ",")) {
+    int typeIndex = 0, operandsIndex = 0;
+    for(; typeIndex < type.size() && operandsIndex < operands.size(); typeIndex++, operandsIndex++) {
+        while(typeIndex < type.size() && (TYPE_CONSTANT(type[typeIndex]) || TYPE_NOT_USED(type[typeIndex]))) {
+            typeIndex++;
+        }
+        
+        if (typeIndex < type.size() && TYPE_REGISTER(type[typeIndex]) &&
+            registerIndex(operands[operandsIndex], type[typeIndex]) == -1) {
+            break;
+        }
+    }
+    
+    while(typeIndex < type.size() && (TYPE_CONSTANT(type[typeIndex]) || TYPE_NOT_USED(type[typeIndex]))) {
+        typeIndex++;
     }
         
-    for(int i = 0; i < value.size(); i++) {
-        if(getOperandAtIndex(i).value == -1) {
-            areValid = false;
-            return;
-        }
-    }
+    areValid = operandsIndex == operands.size() && typeIndex == type.size();     
 }
 
-Operand Operation::Operands::getOperandAtIndex(int index) {
-    std::vector<std::string> types = splitStringWhitCharacterSet(type[index], "|");
-    
-    for(int i = 0; i < types.size(); i++) {
-        Operand operand = parseOperandWithType(value[index], types[i]);
-        if(operand.value !=-1) {
-            return operand;
-        }
-    }
-    
-    return Operand(-1,-1, type[index]);
-}
-
-long long Operation::Operands::createHexRepresentation() {
+std::string Operation::Operands::createHexRepresentation() {
     if(!areValid) {
+        ERROR(BOLD("Internal error: "),
+              "Can't create hex representation for invalid operands");
+    }
+
+    long long operandsCode = 0, offset = 8;
+    
+    for(int typeIndex = 0, operandsIndex = 0; typeIndex < type.size(); typeIndex++) {
+        int shift = 1, value = 0;
+        
+        if(TYPE_CONSTANT(type[typeIndex])) {
+            value = toIntager(type[typeIndex].substr(type[typeIndex].find("_")));
+        } else if(TYPE_NOT_USED(type[typeIndex])) {
+            shift = toIntager(type[typeIndex].substr(type[typeIndex].find("_")));
+        } else if(TYPE_REGISTER(type[typeIndex])) {
+            shift = contains(type[typeIndex], "+") ? 5 : 4;
+            value = registerIndex(operands[operandsIndex++]);
+        } else if(TYPE_ABSOLUT_EXPRESION(type[typeIndex])) {
+            std::string size = type[typeIndex].substr(type[typeIndex].find("_") + 1);
+            size = size.substr(0, size.find("_"));
+            
+            shift = toIntager(size);
+            Argument exp = expresion(operands[operandsIndex++]);
+
+            // TODO SIGNEXT
+
+            value = exp.value;
+            
+            LOG("creating hex rep ", type[typeIndex], " ", size, " ", shift, " ", offset);
+            
+            Section::addRealocationOfSizeAtOffset(exp, shift, offset);
+        }
+        
+        operandsCode <<= shift;
+        operandsCode += value;
+        offset += shift;
+    }
+
+    return toHexadecimal(operandsCode, OPERANDS_LENGTH);
+}
+
+int Operation::Operands::registerIndex(std::string reg, std::string supportedRegisters) {
+    if((reg[0] == 'R' || reg[0] == 'r') && isIntager(reg.substr(1))) {
+        int regIndex = toIntager(reg.substr(1));
+        
+        if(0 > regIndex || regIndex >= 16) {
+            return -1;
+        }
+        
+        return regIndex;
+    }
+    
+    std::map<std::string, int> registers =
+        createMap<std::string, int>
+        ("PC", 16)("LR", 17)("SP", 18)("PSW", 19);
+    
+    if(!contains(supportedRegisters, toUpper(reg)) ) {
         return -1;
     }
-
-    long long operandsCode = 0, shift = 0;
-    for(int i = 0; i < value.size(); i++) {
-        Operand operand = getOperandAtIndex(i);
-
-        operandsCode <<= operand.size;
-        operandsCode += operand.value;
-    }
-
-    return operandsCode;
-}
-
-int parsOperandAsRegister(std::string value){
-    int _value;
     
-    if(value[0] == 'r' || value[0] == 'R') {
-        value = value.substr(1);
-        
-        if(!isIntager(value)) {
-            _value = -1;
-        } else {
-            _value = toIntager(value);
-            
-            if(_value < 0 || _value > 15) {
-                _value = -1;
-            }
-        }
-    } else {
-        _value = -1;
-    }
-    
-    return _value;
-}
-
-Operand Operation::Operands::parseOperandWithType(std::string value, std::string type) {
-    std::string tmp = type.substr(std::string("R_386_").length());
-    
-    int _size = toIntager(tmp.substr(tmp.find_first_of("0123456789"),
-                                     tmp.find_last_of("0123456789") - tmp.find_first_of("0123456789") + 1));
-    
-    int _value;
-    
-    if(_size == 4) {
-        _value = parsOperandAsRegister(value);
-        if(_value == -1) {
-            tmp = tmp.substr(tmp.find("+"));
-            std::vector<std::string> supportedRegisters = splitStringWhitCharacterSet(tmp, "+");
-            std::map<std::string, long long> registers =
-                createMap<std::string, long long>("PC", 16)("LR", 17)("SP", 18)("PSW", 19);
-            for(int i = 0; i < supportedRegisters.size(); i++) {
-                if(supportedRegisters[i].compare(toUpper(value)) == 0) {
-                    _value = registers[toUpper(value)];
-                }
-            }
-        }
-        if(tmp.find("+") != std::string::npos) {
-            _size++;
-        }
-    } else {
-	Expresion expresion(value);
-
-	Value expresionEvaluated = expresion.evaluate();
-	
-	expresionEvaluated.addRealocatioDataForType(type);
-
-	_value  = expresionEvaluated.value;
-    }
-    
-    return Operand(_size, _value, type);
+    return registers[toUpper(reg)];
 }
 
