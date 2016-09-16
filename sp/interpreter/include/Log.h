@@ -9,6 +9,7 @@
 #define LOG_H_
 
 #include "ProcessString.h"
+#include "Colors.h"
 
 #define CONCATENATE_STRINGS(_0, _1, _2, _3, _4, _5, _6, _7, _8, _9, ...) \
 (toString(_0) + toString(_1) + toString(_2) + toString(_3) + toString(_4) + \

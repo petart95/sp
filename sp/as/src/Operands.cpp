@@ -50,16 +50,16 @@ std::string Operation::Operands::createHexRepresentation() {
         ERROR(BOLD("Internal error: "),
               "Can't create hex representation for invalid operands");
     }
-
-    long long operandsCode = 0, offset = 8;
+    
+    unsigned long long operandsCode = 0, offset = 8;
     
     for(int typeIndex = 0, operandsIndex = 0; typeIndex < type.size(); typeIndex++) {
-        int shift = 1, value = 0;
+        unsigned long long shift = 1, value = 0;
         
         if(TYPE_CONSTANT(type[typeIndex])) {
-            value = toIntager(type[typeIndex].substr(type[typeIndex].find("_")));
+            value = toIntager(type[typeIndex].substr(type[typeIndex].find("_") + 1));
         } else if(TYPE_NOT_USED(type[typeIndex])) {
-            shift = toIntager(type[typeIndex].substr(type[typeIndex].find("_")));
+            shift = toIntager(type[typeIndex].substr(type[typeIndex].find("_") + 1));
         } else if(TYPE_REGISTER(type[typeIndex])) {
             shift = contains(type[typeIndex], "+") ? 5 : 4;
             value = registerIndex(operands[operandsIndex++]);
@@ -74,8 +74,6 @@ std::string Operation::Operands::createHexRepresentation() {
 
             value = exp.value;
             
-            LOG("creating hex rep ", type[typeIndex], " ", size, " ", shift, " ", offset);
-            
             Section::addRealocationOfSizeAtOffset(exp, shift, offset);
         }
         
@@ -83,7 +81,7 @@ std::string Operation::Operands::createHexRepresentation() {
         operandsCode += value;
         offset += shift;
     }
-
+    
     return toHexadecimal(operandsCode, OPERANDS_LENGTH);
 }
 

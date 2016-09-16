@@ -16,7 +16,7 @@
   13  h              00000023   .text.drugideo Local        
 
 # .text.prvideo
-00 00 00 00 00 08 00 00 00 0c 01 01 00 00 00 02 00 00 00 00 00 00 00 00 00 00 e0 00 00 08 e1 00 01 06 e2 00 00 c7
+00 00 00 00 00 08 00 00 00 0c 01 01 00 00 00 02 00 00 00 00 00 00 00 00 00 00 e0 80 00 00 e1 20 c0 00 e2 18 e0 00
 
 # .ret.text.prvideo
 # Bit Offset  Type      Simbol
@@ -26,19 +26,19 @@
   00000060    R_386_16  b   
 
 # .bss
-e3 00 00 c5 e4 00 02 0a 41 18 00 14
+e3 18 a0 00 e4 41 40 00 41 1c 00 14
 
 # .ret.bss
 # Bit Offset  Type      Simbol
 
 # .data
-04 04 e5 00 01 45 e6 00 00 22 e7 00 00 04 e8 00 00 21 e9 00 00 22
+04 04 e5 28 a0 00 e6 08 80 00 e7 01 00 00 e8 08 40 00 e9 08 80 00
 
 # .ret.data
 # Bit Offset  Type      Simbol
 
 # .text.drugideo
-ea 28 70 03 ea 20 f0 08 ec 10 00 00 ec 00 00 20 ed 00 00 8c ed 00 00 44 00 00 00 09 00 00 00 0f ff ff ff ff fe e0 00 06 ee e0 06 96 ee e0 03 98 0e f0 60 01 7e f0 5f fe 9e c0 00 02 3
+ea 28 74 03 ea 20 f0 08 ec 10 00 00 ec 00 00 20 ed 46 80 00 ed 22 00 00 00 00 00 09 00 00 00 0f ff ff ff ff fe e1 b8 00 0e e6 96 e0 0e e3 98 10 0e f3 80 01 7e f2 ff fe 9e c0 00 02 3
 
 # .ret.text.drugideo
 # Bit Offset  Type      Simbol

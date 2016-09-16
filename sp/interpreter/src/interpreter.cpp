@@ -7,13 +7,12 @@
 #include "Operation.hpp"
 #include "ProcessString.h"
 
+#include "Memory.h"
 #include "Expresion.h"
 #include "Error.h"
 #include "Log.h"
 
 #define dotSimbol Simbol::tabel[0]
-
-char* MEM;
 
 std::ifstream in;
 std::ofstream out;
@@ -146,42 +145,19 @@ void link(int argc, char** argv) {
     }
 }
 
-#define GETMASK(index, size) (((1L << (size)) - 1L) << (index))
-#define READFROM(data, index, size) (((data) & GETMASK((index), (size))) >> (index))
-#define WRITETO(data, index, size, value) ((data) = ((data) & (~GETMASK((index), (size)))) | ((value) << (index)))
-
-unsigned long long readFromMem(unsigned long long memIndex, unsigned long long size) {
-    unsigned long long data = *((long long *)(((long long)MEM) + memIndex));
-    unsigned long long index = sizeof(long long)*8 - size;
-    
-    return READFROM(data, index, size);
-}
-
-void writeToMem(unsigned long long memIndex, unsigned long long size, unsigned long long value) {
-    unsigned long long data = *((long long *)(((long long)MEM) + memIndex));
-    unsigned long long index = sizeof(long long)*8 - size;
-    
-    value =  WRITETO(data, index, size, value);
-    
-    *((long long *)(((long long)MEM) + memIndex)) = value;
-}
-
 void realoc(Section section, Realocation realoc) {
     long long pos = section.absolutPosition*8 + realoc.bitOffset;
     
     Simbol *simbol = &Simbol::tabel[Simbol::withName(realoc.simbolName)];
     Section *simbolSection = &Section::tabel[Section::withName(simbol->section)];
     
-    LOG(toHexadecimal(*((long long *)(((long long) MEM) + pos)), sizeof(long long)*2));
+    unsigned long long *data = (unsigned long long *)(((long long)MEM) + pos);
     
     int value = simbol->offset + simbolSection->absolutPosition + readFromMem(pos, realoc.size);
     
+    LOG(toBinary(readFromMem(pos, realoc.size), realoc.size));
     writeToMem(pos, realoc.size, value);
-    
-    LOG("index ", (sizeof(long long)*8 - (realoc.size)), " size ", realoc.size);
-    LOG(toHexadecimal(value, realoc.size/4+1));
-    LOG(toHexadecimal(*((long long *)((long long) MEM + pos)), sizeof(long long)*2));
-    LOG("------------");
+    LOG(toBinary(readFromMem(pos, realoc.size), realoc.size));
 }
 
 void load() {
@@ -197,6 +173,13 @@ void load() {
                 toIntager("0x" + Section::tabel[i].data.substr(j, 2));
         }
     }
+    
+    std::cout << "# Memomry layout\n";
+    
+    for(int i = 0; i < dotSimbol.offset; i++) {
+        std::cout << toHexadecimal((int)MEM[i], 2) << " ";
+    }
+    std::cout << "\n";
     
     // Realoc
     for(int i = 0; i < sectionTabelSize; i++) {
