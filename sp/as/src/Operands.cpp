@@ -8,6 +8,7 @@
 
 #include "Operation.hpp"
 #include "CreateMap.hpp"
+#include "CreateVector.h"
 #include "ProcessString.h"
 #include "Log.h"
 #include "Error.h"
@@ -101,7 +102,9 @@ int Operation::Operands::registerIndex(std::string reg, std::string supportedReg
         createMap<std::string, int>
         ("PC", 16)("LR", 17)("SP", 18)("PSW", 19);
     
-    if(!contains(supportedRegisters, toUpper(reg)) ) {
+    std::vector<std::string> supported =
+        splitStringWhitCharacterSet(supportedRegisters, "+");
+    if(!contains(supported, toUpper(reg)) ) {
         return -1;
     }
     
