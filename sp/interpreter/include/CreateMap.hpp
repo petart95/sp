@@ -24,8 +24,30 @@ public:
 };
 
 template <typename T, typename U>
-bool contains(std::map<T, U> & map, T val) {
-    return map.find(val) != map.end();
+bool contains(std::map<T, U> & map, T key) {
+    return map.find(key) != map.end();
+}
+
+template <typename T, typename U>
+bool containsVal(std::map<T, U> & map, U val) {
+    typename std::map<T, U>::const_iterator it;
+    for (it = map.begin(); it != map.end(); ++it) {
+        if (it->second == val) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+template <typename T, typename U>
+T findByVal(std::map<T, U> & map, U val) {
+    typename std::map<T, U>::const_iterator it;
+    for (it = map.begin(); it != map.end(); ++it) {
+        if (it->second == val) {
+            return it->first;
+        }
+    }
 }
 
 #endif

@@ -13,7 +13,9 @@ Simbol::Simbol(int _offset, std::string _name, std::string _section, bool _isGlo
     int index = withName(name);
 
     if(index != -1) {
-        if(tabel[index].isDefined()) {
+        if(!isDefined()){
+            return;
+        } else if(tabel[index].isDefined()) {
             ERROR("Multiple definision of '", BOLD(name), "'");
         } else {
             tabel[index].offset = offset;

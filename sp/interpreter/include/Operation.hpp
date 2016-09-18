@@ -14,6 +14,8 @@
 #include <map>
 #include <utility>
 
+struct Operation;
+
 struct Operand {
     long long value;
     long long size;
@@ -24,6 +26,7 @@ struct Operand {
 };
 
 typedef Operand (*parseOperandWithTypeFunctionPointer)(std::string operandValue);
+typedef void (*executeOperation)(Operation opr);
 
 struct Operation {
     
@@ -37,18 +40,24 @@ struct Operation {
         static std::map<std::string, int> codeForValidFlag;
         
         Opcode(std::string opcode);
+        Opcode(int memPos);
         
         std::string createHexRepresentation();
+
+        bool isConditionValid();
+        bool shouldSetFlags();
     };
     
     struct Operands {
         std::vector<std::string> operands;
         std::vector<std::string> type;
+        std::vector<int> val;
         
         bool areValid;
         
         Operands() : areValid(false) {}
         Operands(std::vector<std::string> _operands, std::string _type);
+        Operands(int memPos, std::string type);
         
         std::string createHexRepresentation();
         
@@ -59,10 +68,15 @@ struct Operation {
     Operands operands;
     
     static std::map<std::string, std::vector<std::string> > validLayouts;
-    
+    static std::map<std::string, executeOperation> executeFunction;
+    static std::map<std::string, std::string> changesFlags;
+
     Operation(std::vector<std::string> operation);
+    Operation(int memPos);
     
     std::string createHexRepresentation();
+
+    static bool execute();
 };
 
 #endif /* Operation_hpp */

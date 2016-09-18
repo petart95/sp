@@ -116,6 +116,12 @@ std::string removeCommentsFromLine(std::string line) {
  * @param line The line to be procssed.
  */
 void processLineFirstPass(std::string line) {
+    // Check for iret and rts
+    replace(line, "iret", "mov-uf pc,lr");
+    replace(line, "IRET", "mov-uf pc,lr");
+    replace(line, "rts", "mov pc,lr");
+    replace(line, "RTS", "mov pc,lr");
+
     // Check line for label
     if(line.find(":") != std::string::npos) {
         std::string label = line.substr(0, line.find(":"));
@@ -161,6 +167,12 @@ void processLineFirstPass(std::string line) {
  * @param line The line to be procssed.
  */
 void processLineSecondPass(std::string line) {
+    // Check for iret and rts
+    replace(line, "iret", "mov-uf pc,lr");
+    replace(line, "IRET", "mov-uf pc,lr");
+    replace(line, "rts", "mov pc,lr");
+    replace(line, "RTS", "mov pc,lr");
+
     // Remove label from line
     if(line.find(":") != std::string::npos) {
         line = line.substr(line.find(":") + 1);

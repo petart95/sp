@@ -38,10 +38,10 @@ e3 18 a0 00 e4 41 40 00 41 1c 00 14
 # Bit Offset  Type      Simbol
 
 # .text.drugideo
-ea 28 74 03 ea 20 f0 08 ec 10 00 00 ec 00 00 20 ed 46 80 00 ed 22 00 00 00 00 00 09 00 00 00 0f ff ff ff ff fe e1 b8 00 0e e6 96 e0 0e e3 98 10 0e f3 80 01 7e f2 ff fe 9e c0 00 02 3
+ea 28 74 03 ea 20 f0 08 ec 10 00 00 ec 00 00 20 ed 46 80 00 ed 22 00 00 00 00 00 09 00 00 00 0f ff ff ff ee 1b 80 00 ee 69 6e 00 ee 39 81 00 ef 38 00 17 ef 2f ff e9 ec 00 00 23
 
 # .ret.text.drugideo
 # Bit Offset  Type      Simbol
   0000004d    R_386_19  .text.drugideo
-  00000172    R_386_5   b   
-  000001c8    R_386_24  .text.drugideo
+  0000016a    R_386_5   b   
+  000001c0    R_386_24  .text.drugideo

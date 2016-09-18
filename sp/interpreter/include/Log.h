@@ -17,7 +17,7 @@
 
 #define LOG(...) log(CONCATENATE_STRINGS(BOLD(currentDateTime() + YEL(" LOG: ")), __VA_ARGS__, "", "", "", "", "", "", "", "", ""))
 
-#define LOGG
+//#define LOGG
 
 #include <stdio.h>
 #include <stdarg.h>

@@ -76,12 +76,16 @@ std::string Operation::Operands::createHexRepresentation() {
             
             Section::addRealocationOfSizeAtOffset(exp, shift, offset);
         }
-        
+
         operandsCode <<= shift;
         operandsCode += value;
         offset += shift;
+	LOG(toBinary(operandsCode, 24), " ", value, " ", shift);
     }
-    
+
+    LOG(toHexadecimal(operandsCode, OPERANDS_LENGTH));
+    LOG("--------------");    
+
     return toHexadecimal(operandsCode, OPERANDS_LENGTH);
 }
 

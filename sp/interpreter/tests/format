@@ -1,4 +1,5 @@
-.text.prvi
+.data.itabel
 .=. + 10
-.data
-.=.+20
+.text.main
+.=.+10
+

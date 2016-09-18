@@ -49,13 +49,22 @@ void Simbol::update(std::string name, Argument arg) {
     
     if(index != -1) {
         tabel[index].offset = arg.value;
-        tabel[index].section = Simbol::tabel[Simbol::withName(arg.simbolName)].section;
+        
+        if(arg.simbolName != ABSOLUT) {
+            tabel[index].section = Simbol::tabel[Simbol::withName(arg.simbolName)].section;
+        } else  {
+            tabel[index].section = ABSOLUT;
+        }
         
         if(tabel[index].section == UNDEFINED) {
             ERROR("Can't use undefined simbol '", BOLD(arg.simbolName),"' when updating simbol value");
         }
     } else {
-        Simbol(arg.value, name, Simbol::tabel[Simbol::withName(arg.simbolName)].section);
+        if(arg.simbolName != ABSOLUT) {
+            Simbol(arg.value, name, Simbol::tabel[Simbol::withName(arg.simbolName)].section);
+        } else  {
+            Simbol(arg.value, name, ABSOLUT);
+        }
     }
 }
 

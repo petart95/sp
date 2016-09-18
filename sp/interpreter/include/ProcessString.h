@@ -55,4 +55,12 @@ std::string removeCharacterSetFromString(std::string str, std::string charsToRem
 
 std::string insertCharEveryNthCharacterOfString(char c, int n, const std::string& s);
 
+std::string concatenateWith(std::vector<std::string> v, std::string sep);
+
+char getch();
+
+bool replace(std::string& str, const std::string& from, const std::string& to);
+
+char kbhit();
+
 #endif /* PROCESS_STRING_H_ */

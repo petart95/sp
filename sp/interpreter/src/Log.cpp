@@ -24,6 +24,8 @@ void vlog(const char* format, va_list &arglist) {
 	logging = false;
 }
 
+#endif // LOG
+
 // Get current date/time, format is YYYY-MM-DD.HH:mm:ss
 const std::string currentDateTime() {
     time_t     now = time(0);
@@ -36,5 +38,3 @@ const std::string currentDateTime() {
     
     return buf;
 }
-
-#endif // LOG

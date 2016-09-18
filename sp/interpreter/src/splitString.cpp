@@ -149,3 +149,77 @@ std::string insertCharEveryNthCharacterOfString(char c, int n, const std::string
     
     return ss.str();
 }
+
+std::string concatenateWith(std::vector<std::string> v, std::string sep) {
+    std::stringstream ss;
+    std::copy(v.begin(), v.end(), std::ostream_iterator<std::string>(ss, sep.c_str()));
+    std::string result = ss.str();
+
+    if (!result.empty()) {
+        result.resize(result.length() - 1); // trim trailing space
+    }
+
+    return result;
+}
+
+#include <unistd.h>
+#include <termios.h>
+
+char getch() {
+        char buf = 0;
+        struct termios old = {0};
+        if (tcgetattr(0, &old) < 0)
+                perror("tcsetattr()");
+        old.c_lflag &= ~ICANON;
+        old.c_lflag &= ~ECHO;
+        old.c_cc[VMIN] = 1;
+        old.c_cc[VTIME] = 0;
+        if (tcsetattr(0, TCSANOW, &old) < 0)
+                perror("tcsetattr ICANON");
+        if (read(0, &buf, 1) < 0)
+                perror ("read()");
+        old.c_lflag |= ICANON;
+        old.c_lflag |= ECHO;
+        if (tcsetattr(0, TCSADRAIN, &old) < 0)
+                perror ("tcsetattr ~ICANON");
+        return (buf);
+}
+
+bool replace(std::string& str, const std::string& from, const std::string& to) {
+    size_t start_pos = str.find(from);
+    if(start_pos == std::string::npos)
+        return false;
+    str.replace(start_pos, from.length(), to);
+    return true;
+}
+
+#include <stdio.h>
+#include <termios.h>
+#include <unistd.h>
+#include <fcntl.h>
+
+char kbhit() {
+  struct termios oldt, newt;
+  int ch;
+  int oldf;
+
+  tcgetattr(STDIN_FILENO, &oldt);
+  newt = oldt;
+  newt.c_lflag &= ~(ICANON | ECHO);
+  tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+  oldf = fcntl(STDIN_FILENO, F_GETFL, 0);
+  fcntl(STDIN_FILENO, F_SETFL, oldf | O_NONBLOCK);
+
+  ch = getchar();
+
+  tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+  fcntl(STDIN_FILENO, F_SETFL, oldf);
+
+  /*if(ch != EOF) {
+    ungetc(ch, stdin);
+    return true;
+  }*/
+
+  return ch;
+}
+

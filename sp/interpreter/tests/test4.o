@@ -1,0 +1,30 @@
+# Tabela simbola
+# ID  Name           Offset     Section        Global/Local 
+  0   .data.itabel   00000000   .data.itabel   Global       
+  1   read           00000000   UNDEFINED      Global       
+  2   write          00000000   UNDEFINED      Global       
+  3   .text.main     00000000   .text.main     Global       
+  4   .text.intr     00000000   .text.intr     Global       
+
+# .data.itabel
+00 00 00 00 00 00 00 00
+
+# .ret.data.itabel
+# Bit Offset  Type      Simbol
+  00000000    R_386_32  .text.main
+  00000020    R_386_32  .text.intr
+
+# .text.main
+ec 00 00 00 ee 18 40 00 ec 00 00 00 e1 08 60 00 ec 00 00 00
+
+# .ret.text.main
+# Bit Offset  Type      Simbol
+  00000008    R_386_24  read
+  00000048    R_386_24  read
+  00000088    R_386_24  write
+
+# .text.intr
+e1 7c 20 00 e1 3c 00 41 ed 79 00 00 fe 84 40 00
+
+# .ret.text.intr
+# Bit Offset  Type      Simbol

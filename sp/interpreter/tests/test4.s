@@ -1,7 +1,3 @@
-.data
-inAdd:	.long 30
-outAdd:	.long 35
-
 .data.itabel
 	.long .text.main
 	.long .text.intr
@@ -11,13 +7,11 @@ outAdd:	.long 35
 .extern read, write
 
 .text.main
-read:	sub r3,r3
-	ldr r3,r1,0,inAdd
-	ldr r3,r2,0,outAdd
-	add r1,r2
-write:	sub r2,r2
-	add r2,outAdd
-	out r1,r2
+	call read
+	mov r3,r1
+	call read
+	add r1,r3
+	call write
 
 .text.intr
 	add r15,0x2000

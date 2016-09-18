@@ -153,16 +153,16 @@ void realoc(Section section, Realocation realoc) {
     
     unsigned long long *data = (unsigned long long *)(((long long)MEM) + pos);
     
-    int value = simbol->offset + simbolSection->absolutPosition + readFromMem(pos, realoc.size);
+    int value = simbol->offset + simbolSection->absolutPosition +
+                readFromMem(pos, realoc.size);
     
-    LOG(toBinary(readFromMem(pos, realoc.size), realoc.size));
     writeToMem(pos, realoc.size, value);
-    LOG(toBinary(readFromMem(pos, realoc.size), realoc.size));
 }
 
 void load() {
     // Create Memory
-    MEM = (char*) calloc(dotSimbol.offset, sizeof(char));
+    MEM = (ubyte*) calloc(MEMORY_SIZE, sizeof(ubyte));
+    memset (MEM, 0, MEMORY_SIZE * sizeof(ubyte));
     
     // Load data into Memory
     int sectionTabelSize = Section::tabel.size();
@@ -174,12 +174,12 @@ void load() {
         }
     }
     
-    std::cout << "# Memomry layout\n";
+    /*std::cout << "# Memomry layout\n";
     
     for(int i = 0; i < dotSimbol.offset; i++) {
         std::cout << toHexadecimal((int)MEM[i], 2) << " ";
     }
-    std::cout << "\n";
+    std::cout << "\n";*/
     
     // Realoc
     for(int i = 0; i < sectionTabelSize; i++) {
@@ -191,16 +191,66 @@ void load() {
     }
 }
 
+void interpret() {
+    struct timespec start, finish;
+    double elapsed;
+
+    // staarting postion
+    PC = readFromMem(32*0, 32);
+
+    clock_gettime(CLOCK_MONOTONIC, &start);
+
+    while(true) {
+        bool correctOperation = Operation::execute();
+
+	// Clock interupt
+        clock_gettime(CLOCK_MONOTONIC, &finish);
+
+        elapsed = (finish.tv_sec - start.tv_sec);
+        elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
+
+        if(elapsed > 1 && READFROM(PSW, 31, 1) && READFROM(PSW, 30, 1)) {
+            clock_gettime(CLOCK_MONOTONIC, &start);
+
+            push(PSW);
+            LR = PC;
+            PC = readFromMem(32*1, 32);
+            WRITETO(PSW, 31, 1, 0);
+        }
+
+        // Bad operation interupt
+        if(!correctOperation && READFROM(PSW, 31, 1)) {
+            push(PSW);
+            LR = PC;
+            PC = readFromMem(32*3, 32);
+            WRITETO(PSW, 31, 1, 0);
+        }
+
+        // Keybord interupt
+        char ch = kbhit();
+	if(ch != EOF) {
+            inputBuffer.push_back(ch);
+
+            if(READFROM(PSW, 31, 1)) {
+                push(PSW);
+                LR = PC;
+                PC = readFromMem(32*3, 32);
+                WRITETO(PSW, 31, 1, 0);
+            }
+        }
+    }
+}
+
 int main(int argc, char** argv) {
-	init(argc, argv);
+    init(argc, argv);
     
-	// Link input files
-	link(argc, argv);
+    // Link input files
+    link(argc, argv);
 
     // Load data into Memory and realocate
     load();
-    
-    std::cout << Simbol::tabelRows();
+
+    /*std::cout << Simbol::tabelRows();
     for(int i = 0; i < Simbol::tabel.size(); i++) {
         std::cout << Simbol::tabel[i];
     }
@@ -214,11 +264,14 @@ int main(int argc, char** argv) {
     for(int i = 0; i < dotSimbol.offset; i++) {
         std::cout << toHexadecimal((int)MEM[i], 2) << " ";
     }
-    std::cout << "\n";
+    std::cout << "\n";*/
+
+    // interpret
+    interpret();
 
     // Close
     closeLog();
     closeFile();
 
-	return 0;
+    return 0;
 }

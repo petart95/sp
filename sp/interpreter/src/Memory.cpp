@@ -2,7 +2,11 @@
 #include "ProcessString.h"
 #include "Log.h"
 
-char* MEM;
+ubyte* MEM;
+
+std::vector<char> inputBuffer;
+
+CPU cpu;
 
 unsigned long long readFromMem(unsigned long long memIndex, int bitOffset, unsigned long long size) {
     unsigned long long *data = (unsigned long long *)(((unsigned long long)MEM) + memIndex);
